@@ -3,8 +3,8 @@ ne_counter = 0
 with open('./ne_list.txt', 'r') as reader:
     line = reader.readline()
     while line != '':
-        print(line, end='')
-        line = reader.readline()
         ne_counter += 1
-print("\n\nЗавершено. обследовано устройств:", ne_counter, "\nПрограмму можно закрыть.")
+        print('NE', ne_counter, ':', line, end='')
+        line = reader.readline()
+print("\n\nЗавершено. Обследовано устройств:", ne_counter)
 input()
