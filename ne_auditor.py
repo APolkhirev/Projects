@@ -11,3 +11,4 @@ with open('ne_list.txt', 'r') as reader:
         print(line, end='')
         line = reader.readline()
 
+print('Some changes')
