@@ -8,7 +8,7 @@ try:
     open(ip_list_file, 'r')
     ip_list_file_exist = True
 except FileNotFoundError:
-    print("Ошибка: файл ./" + ip_list_file + " не найден.")
+    print(f"Ошибка: файл ./{ip_list_file} не найден.")
 
 ne_counter = 0
 if ip_list_file_exist:
@@ -16,9 +16,9 @@ if ip_list_file_exist:
         line = reader.readline()
         while line != '':
             ne_counter += 1
-            print('NE', ne_counter, ':', line, end='')
+            print(f'NE-{ne_counter}: {line}', end='')
             line = reader.readline()
-    print("\n\nГотово. Всего обработано NE:", ne_counter)
+    print(f"\n\nГотово. Всего было обработано NE: {ne_counter}")
 else:
     pass
 
