@@ -17,7 +17,7 @@ if ip_list_file_exist:
         line = reader.readline()
         while line != '':
             ne_counter += 1
-            print(f'NE-{ne_counter}: {line}', end='')
+            print(f"NE-{ne_counter}: {line}", end='')
             line = reader.readline()
     print(f"\n\nГотово. Всего было обработано NE: {ne_counter}")
 else:
