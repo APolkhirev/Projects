@@ -8,10 +8,11 @@ try:
     open(ip_list_file, 'r')
     ip_list_file_exist = True
 except FileNotFoundError:
-    print(f"Ошибка: файл ./{ip_list_file} не найден.")
+    print(f"Ошибка: файл ./{ip_list_file}, содержащий список IP-адресов сетевых элементов, не найден.")
 
 ne_counter = 0
 if ip_list_file_exist:
+    print(f"Список импортирован из файла {ip_list_file}:")
     with open(ip_list_file, 'r') as reader:
         line = reader.readline()
         while line != '':
