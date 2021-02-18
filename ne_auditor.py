@@ -6,5 +6,5 @@ with open('./ne_list.txt', 'r') as reader:
         ne_counter += 1
         print('NE', ne_counter, ':', line, end='')
         line = reader.readline()
-print("\n\nЗавершено. Обследовано устройств:", ne_counter)
+print("\n\nDone. Total processed NEs:", ne_counter)
 input()
