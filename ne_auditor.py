@@ -5,13 +5,7 @@ import datetime
 import getpass
 import os
 import shutil
-from netmiko import Netmiko
-
-v_login = input("Введите логин аудитора: ")
-try:
-    v_pass = getpass.getpass("Введите пароль аудитора: ")
-except Exception as err:
-    print('Ошибка: ', err)
+from netmiko import (Netmiko, ssh_exception)
 
 v_date_time: str = str(datetime.date.today())
 v_ip_list_file: str = 'ne_list.txt'
@@ -64,20 +58,29 @@ for x in v_nes:
 print('\n\n', v_nes)
 print('\n\n', v_coms)
 
-#host1 = {
-#    "host": "192.168.1.1",
-#    "username": "admin",
-#    "password": "auditor_password",
-#    "device_type": "huawei",
-#    "global_delay_factor": 0.1,
-#    }
-#try:
-#    net_connect = Netmiko(**host1)
-#except NoValidConnectionsError:
-#    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1Обломинго")
-#else:
-#    v_command = ["display current config", "display version"]
-#    print("Connected to:", net_connect.find_prompt())
-#    output = net_connect.send_config_set(v_command, delay_factor=.5)
-#    net_connect.disconnect()
-#    print(output)
+
+v_login = input("Введите логин аудитора: ")
+try:
+    v_pass = getpass.getpass("Введите пароль аудитора: ")
+except Exception as err:
+    print('Ошибка: ', err)
+
+
+host = {
+    "host": "192.168.1.1",
+    "username": "root",
+    "password": "pa$$w0rd",
+    "device_type": "huawei",
+    "global_delay_factor": 0.1,  # Increase all sleeps by a factor of 1
+}
+
+try:
+    net_connect = Netmiko(**host)
+except ssh_exception.NetmikoTimeoutException:
+    print('!!!!!!!!!OOOOOOOOOOOOOOOOOOO!!!!!!!!!!!!!!!')
+else:
+    v_command = ["display current config", "display version"]
+    print("Connected to:", net_connect.find_prompt())
+    output = net_connect.send_config_set(v_command, delay_factor=.5)
+    net_connect.disconnect()
+    print(output)
