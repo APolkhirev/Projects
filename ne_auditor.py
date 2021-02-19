@@ -6,7 +6,7 @@ import shutil
 import datetime
 import getpass
 
-from typing import Tuple
+
 v_login = input("Введите логин аудитора: ")
 try:
     v_pass = getpass.getpass("Введите пароль аудитора: ")
@@ -50,13 +50,13 @@ except FileNotFoundError:
 
 v_counter: int = 0
 if v_commands_file_exist:
-    print(f"\nСписок импортирован из файла {v_commands_file}:")
+    # print(f"\nСписок импортирован из файла {v_commands_file}:")
     with open(v_commands_file, 'r') as v_commreader:
         v_line: str = v_commreader.readline()
         while v_line:
             v_counter += 1
             v_coms = v_coms + (v_line.rstrip(),)
-            print(f"Команда {v_counter}: {v_line}", end='')
+            # print(f"Команда {v_counter}: {v_line}", end='')
             v_line = v_commreader.readline()
 else:
     pass
@@ -64,13 +64,13 @@ else:
 
 v_counter: int = 0
 if v_ip_list_file_exist:
-    print(f"\n\nСписок импортирован из файла {v_ip_list_file}:")
+    # print(f"\n\nСписок импортирован из файла {v_ip_list_file}:")
     with open(v_ip_list_file, 'r') as v_ipreader:
         v_line: str = v_ipreader.readline()
         while v_line:
             v_counter += 1
             v_nes = v_nes + (v_line.rstrip(),)
-            print(f"NE-{v_counter}: {v_line}", end='')
+            # print(f"NE-{v_counter}: {v_line}", end='')
             v_line = v_ipreader.readline()
 else:
     pass
@@ -86,10 +86,9 @@ for x in v_nes:
         v_counter += 1
         for v_comanda in v_coms:
             v_filename: str = v_nedir + "\\" + "(" + x + ")_" + v_comanda + ".log"
-            f = open(v_filename, 'w')
-            f.write('test')
-            f.close()
+            with open(v_filename, 'w') as f:
+                f.write('new test')
+                f.close()
 print('\n\n', v_nes)
 print('\n\n', v_coms)
 
-input()
