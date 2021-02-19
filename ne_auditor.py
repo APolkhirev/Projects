@@ -7,10 +7,11 @@ import datetime
 from typing import Tuple
 
 v_date_time: str = str(datetime.date.today())
-v_ip_list_file: list = 'ne_list.txt'
-v_ip_list_file_exist: bool = False
-v_path: str = os.getcwd() + '\\audit_result_' + v_date_time
-v_nes: tuple = ()
+v_ip_list_file: str = 'ne_list.txt'
+v_commands_file: str = 'ne_commands.txt'
+v_commands_file_exist = v_ip_list_file_exist = False
+v_path: str = './audit_result_' + v_date_time
+v_coms = v_nes = ()  # определяем список команд и список NE
 
 try:
     shutil.rmtree(v_path, ignore_errors=False, onerror=None)
@@ -32,29 +33,53 @@ try:
 except FileNotFoundError:
     print(f"Ошибка: файл ./{v_ip_list_file}, содержащий построчный список IP-адресов сетевых элементов, не найден.")
 
-v_ne_counter: int = 0
+try:
+    open(v_commands_file_exist, 'r')
+    v_commands_file_exist = True
+except FileNotFoundError:
+    print(f"Ошибка: файл ./{v_commands_file}, содержащий построчный спи6сок команд, не найден.")
+
+v_counter: int = 0
+if v_commands_file_exist:
+    print(f"\nСписок импортирован из файла {v_commands_file}:")
+    with open(v_commands_file, 'r') as v_commreader:
+        v_line: str = v_commreader.readline()
+        while v_line:
+            v_counter += 1
+            v_coms = v_coms + (v_line.rstrip(),)
+            print(f"Команда {v_counter}: {v_line}", end='')
+            v_line = v_commreader.readline()
+else:
+    pass
+
+
+v_counter: int = 0
 if v_ip_list_file_exist:
-    print(f"Список импортирован из файла {v_ip_list_file}:")
+    print(f"\nСписок импортирован из файла {v_ip_list_file}:")
     with open(v_ip_list_file, 'r') as v_ipreader:
         v_line: str = v_ipreader.readline()
-        while v_line != '':
-            v_ne_counter += 1
+        while v_line:
+            v_counter += 1
             v_nes = v_nes + (v_line.rstrip(),)
-            print(f"NE-{v_ne_counter}: {v_line}", end='')
+            print(f"NE-{v_counter}: {v_line}", end='')
             v_line = v_ipreader.readline()
 else:
     pass
 
-v_ne_counter: int = 0
+v_counter: int = 1
 for x in v_nes:
     try:
-        v_ne_counter += 1
-        os.mkdir(v_path + '\\' + f"NE-{v_ne_counter} (" + x + ")")
+        os.mkdir(v_path + '\\' + f"NE-{v_counter} (" + x + ")")
     except OSError:
         print(f"Создать директорию не удалось")
     else:
-        pass
-
+        v_nedir = v_path + '\\' + f"NE-{v_counter} (" + x + ")"
+        v_counter += 1
+        for v_comanda in v_coms:
+            v_filename: str = v_nedir + "\\" + v_comanda + ".log"
+            f = open(v_filename, 'w')
+            f.write('test')
+            f.close()
 print('\n\n', v_nes)
+print('\n\n', v_coms)
 
-input()
