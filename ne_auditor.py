@@ -4,7 +4,16 @@
 import os
 import shutil
 import datetime
+import getpass
+
 from typing import Tuple
+v_login = input("Введите логин аудитора: ")
+try:
+    v_pass = getpass.getpass("Введите пароль аудитора: ")
+except Exception as err:
+    print('Ошибка: ', err)
+else:
+    pass
 
 v_date_time: str = str(datetime.date.today())
 v_ip_list_file: str = 'ne_list.txt'
@@ -55,7 +64,7 @@ else:
 
 v_counter: int = 0
 if v_ip_list_file_exist:
-    print(f"\nСписок импортирован из файла {v_ip_list_file}:")
+    print(f"\n\nСписок импортирован из файла {v_ip_list_file}:")
     with open(v_ip_list_file, 'r') as v_ipreader:
         v_line: str = v_ipreader.readline()
         while v_line:
@@ -76,10 +85,11 @@ for x in v_nes:
         v_nedir = v_path + '\\' + f"NE-{v_counter} (" + x + ")"
         v_counter += 1
         for v_comanda in v_coms:
-            v_filename: str = v_nedir + "\\" + v_comanda + ".log"
+            v_filename: str = v_nedir + "\\" + "(" + x + ")_" + v_comanda + ".log"
             f = open(v_filename, 'w')
             f.write('test')
             f.close()
 print('\n\n', v_nes)
 print('\n\n', v_coms)
 
+input()
