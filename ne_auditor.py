@@ -1,7 +1,7 @@
 # Скрипт написан для частных задач, решаемых в конкретном проекте и не является универсальным инструментом (пока).
 # Да и может он не много (пока).
 
-ip_list_file = 'ne_list.txt'
+ip_list_file: str = 'ne_list.txt'
 ip_list_file_exist = False
 
 try:
@@ -13,12 +13,12 @@ except FileNotFoundError:
 ne_counter = 0
 if ip_list_file_exist:
     print(f"Список импортирован из файла {ip_list_file}:")
-    with open(ip_list_file, 'r') as reader:
-        line = reader.readline()
-        while line != '':
+    line = ' '
+    with open(ip_list_file, 'r') as ipreader:
+        while line:
             ne_counter += 1
+            line = ipreader.readline()
             print(f"NE-{ne_counter}: {line}", end='')
-            line = reader.readline()
     print(f"\n\nГотово. Всего было обработано NE: {ne_counter}")
 else:
     pass
