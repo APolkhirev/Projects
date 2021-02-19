@@ -91,4 +91,3 @@ for x in v_nes:
                 f.close()
 print('\n\n', v_nes)
 print('\n\n', v_coms)
-
