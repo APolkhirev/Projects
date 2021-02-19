@@ -1,0 +1,10 @@
+display current-configuration
+display version
+display patch-information
+display health
+display memory
+display cpu
+display device alarm hardware
+display device temperature all
+display device fan
+display device power
