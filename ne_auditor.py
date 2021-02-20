@@ -14,7 +14,8 @@ v_date_time: str = str(datetime.date.today())
 v_ip_list_file: str = 'ne_list.txt'
 v_commands_file: str = 'ne_commands.txt'
 v_path: str = './audit_result_' + v_date_time
-v_coms = v_nes = ()  # определяем список команд и список NE
+v_coms = ()  # определяем список команд
+v_nes = ()   # определяем список NE
 
 try:
     shutil.rmtree(v_path, ignore_errors=False, onerror=None)
