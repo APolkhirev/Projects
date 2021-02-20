@@ -56,7 +56,7 @@ def f_checkip(v_ip):
         v_ip_description = "Bad IP: In use for IP multicast. (Former Class D network)."
         return False, v_ip_description
     elif ipaddress.ip_address('240.0.0.0') < ipaddress.ip_address(v_ip) < ipaddress.ip_address('255.255.255.254'):
-        v_ip_description = "Bad IP: In use for IP multicast. (Reserved for future use. (Former Class E network)."
+        v_ip_description = "Bad IP: In use for IP multicast. Reserved for future use. (Former Class E network)."
         return False, v_ip_description
     elif ipaddress.ip_address(v_ip) == ipaddress.ip_address('255.255.255.255'):
         v_ip_description = """Bad IP: Reserved for the "limited broadcast" destination address."""

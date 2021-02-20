@@ -8,7 +8,7 @@ import shutil
 from netmiko import (Netmiko, ssh_exception)
 import ff_ipchecker
 
-print(ff_ipchecker.f_checkip('0.40.0.1'))
+print(ff_ipchecker.f_checkip('240.40.0.1'))
 
 v_date_time: str = str(datetime.date.today())
 v_ip_list_file: str = 'ne_list.txt'
