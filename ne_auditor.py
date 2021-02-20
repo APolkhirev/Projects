@@ -7,9 +7,8 @@ import datetime
 import getpass
 import os
 import shutil
-from netmiko import (Netmiko, ssh_exception)
 import ff_ipchecker
-
+import ff_access_to_ne
 
 v_date_time: str = str(datetime.date.today())
 v_ip_list_file: str = 'ne_list.txt'
@@ -20,12 +19,12 @@ v_coms = v_nes = ()  # определяем список команд и спи�
 try:
     shutil.rmtree(v_path, ignore_errors=False, onerror=None)
 except OSError:
-    print (f"Удалить директорию result не удалось")
+    print("Удалить директорию result не удалось")
 
 try:
     os.mkdir(v_path)
 except OSError:
-    print (f"Создать директорию result не удалось")
+    print("Создать директорию result не удалось")
 
 try:
     """ Считывание IP-адресов из файла в кортеж """
@@ -41,7 +40,7 @@ try:
                       f"{v_readedip.rstrip()}: "
                       f"{ff_ipchecker.f_checkip(v_readedip.rstrip())[1]}")
             v_readedip = v_ipreader.readline()
-        v_nes = tuple(set(v_nes))  # убираем дублирующиеся IP'шники
+        v_nes = sorted(tuple(set(v_nes)))  # сортируем и убираем дублирующиеся IP'шники
 except FileNotFoundError:
         print(f"Ошибка: файл ./{v_ip_list_file}, "
               f"содержащий построчный список IP-адресов сетевых элементов, не найден.")
@@ -73,8 +72,7 @@ for x in v_nes:
                 f.close()
 
 print('\n\n', v_nes)
-print('\n\n', v_coms)
-
+print('\n', v_coms, '\n')
 
 v_login = input("Введите логин: ")
 try:
@@ -82,21 +80,4 @@ try:
 except Exception as err:
     print('Ошибка: ', err)
 
-v_ne_ssh = {
-    "host": "172.16.1.2",
-    "username": "auditor",
-    "password": "1qaz@WSX",
-    "device_type": "huawei",
-    # "global_delay_factor": 0.1,  # Increase all sleeps by a factor of 1
-}
-
-try:
-    net_connect = Netmiko(**v_ne_ssh)
-except ssh_exception.NetmikoTimeoutException:
-    print(f'Не удалось подключиться к {v_ne_ssh["host"]}')
-else:
-    v_command = "display current-configuration"
-    print("Connected to:", net_connect.find_prompt())
-    output = net_connect.send_command_timing(v_command)
-    net_connect.disconnect()
-    print(output)
+ff_access_to_ne.f_ne_access(v_nes[0], v_login, v_pass, "huawei", v_coms[0])
