@@ -84,10 +84,10 @@ except Exception as err:
 
 v_ne_ssh = {
     "host": "172.16.1.2",
-    "username": v_login,
-    "password": v_pass,
+    "username": "auditor",
+    "password": "1qaz@WSX",
     "device_type": "huawei",
-    "global_delay_factor": 0.1,  # Increase all sleeps by a factor of 1
+    # "global_delay_factor": 0.1,  # Increase all sleeps by a factor of 1
 }
 
 try:
@@ -95,8 +95,8 @@ try:
 except ssh_exception.NetmikoTimeoutException:
     print(f'Не удалось подключиться к {v_ne_ssh["host"]}')
 else:
-    v_command = ["display current-configuration"]
+    v_command = "display current-configuration"
     print("Connected to:", net_connect.find_prompt())
-    output = net_connect.send_config_set(v_command, delay_factor=.5)
+    output = net_connect.send_command_timing(v_command)
     net_connect.disconnect()
     print(output)
