@@ -42,8 +42,8 @@ try:
             v_readedip = v_ipreader.readline()
         v_nes = sorted(tuple(set(v_nes)))  # сортируем и убираем дублирующиеся IP'шники
 except FileNotFoundError:
-        print(f"Ошибка: файл ./{v_ip_list_file}, "
-              f"содержащий построчный список IP-адресов сетевых элементов, не найден.")
+    print(f"Ошибка: файл ./{v_ip_list_file}, "
+          f"содержащий построчный список IP-адресов сетевых элементов, не найден.")
 
 try:
     """ Считывание списка команд из файла в кортеж """
@@ -56,7 +56,15 @@ try:
 except FileNotFoundError:
     print(f"Ошибка: файл ./{v_commands_file}, содержащий построчный список команд, не найден.")
 
+v_login = input("Введите логин: ")
+v_pass: str = ''
+try:
+    v_pass = getpass.getpass("Введите пароль: ")
+except Exception as err:
+    print('Ошибка: ', err)
+
 v_counter: int = 1
+v_access_via: str = ''
 for x in v_nes:
     try:
         os.mkdir(v_path + '\\' + f"NE-{v_counter} (" + x + ")")
@@ -64,20 +72,8 @@ for x in v_nes:
         print(f"Создать директорию не удалось")
     else:
         v_nedir = v_path + '\\' + f"NE-{v_counter} (" + x + ")"
+        v_access_via = ff_access_to_ne.f_ne_access(v_nes[v_counter-1], v_login, v_pass, "huawei", v_coms, v_nedir)
         v_counter += 1
-        for v_comanda in v_coms:
-            v_filename: str = v_nedir + "\\" + "(" + x + ")_" + v_comanda + ".log"
-            with open(v_filename, 'w') as f:
-                f.write('new test')
-                f.close()
-
+        print(v_access_via)
 print('\n\n', v_nes)
 print('\n', v_coms, '\n')
-
-v_login = input("Введите логин: ")
-try:
-    v_pass = getpass.getpass("Введите пароль: ")
-except Exception as err:
-    print('Ошибка: ', err)
-
-ff_access_to_ne.f_ne_access(v_nes[0], v_login, v_pass, "huawei", v_coms[0])
