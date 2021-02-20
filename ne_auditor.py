@@ -75,9 +75,10 @@ for x in v_nes:
 print('\n\n', v_nes)
 print('\n\n', v_coms)
 
-v_login = input("Введите логин аудитора: ")
+
+v_login = input("Введите логин: ")
 try:
-    v_pass = getpass.getpass("Введите пароль аудитора: ")
+    v_pass = getpass.getpass("Введите пароль: ")
 except Exception as err:
     print('Ошибка: ', err)
 
@@ -94,7 +95,7 @@ try:
 except ssh_exception.NetmikoTimeoutException:
     print(f'Не удалось подключиться к {v_ne_ssh["host"]}')
 else:
-    v_command = ["display current config", "display version"]
+    v_command = ["display current-configuration"]
     print("Connected to:", net_connect.find_prompt())
     output = net_connect.send_config_set(v_command, delay_factor=.5)
     net_connect.disconnect()

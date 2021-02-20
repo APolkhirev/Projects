@@ -1,7 +1,3 @@
 display current-configuration
 display version
-display patch-information
-display patch-information
-display lldp nei
-display current-configuration
 display version
