@@ -37,7 +37,7 @@ try:
             if ff_ipchecker.f_checkip(v_readedip.rstrip())[0]:
                 v_nes = v_nes + (v_readedip.rstrip(),)
             else:
-                print(f"Ошибка в строке {v_counter}): "
+                print(f"Ошибка в строке [{v_counter}] "
                       f"{v_readedip.rstrip()}: "
                       f"{ff_ipchecker.f_checkip(v_readedip.rstrip())[1]}")
             v_readedip = v_ipreader.readline()
