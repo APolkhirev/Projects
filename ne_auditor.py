@@ -156,7 +156,7 @@ try:
 except FileNotFoundError:
     print(f"Ошибка: файл ./{v_commands_file}, содержащий построчный список команд, не найден.")
 
-v_login = input("Введите логин: ")
+v_login = input("Введите логин (общий на все NE): ")
 v_pass: str = ''
 try:
     v_pass = getpass.getpass("Введите пароль: ")
@@ -178,4 +178,4 @@ for x in v_nes:
 print('\n\n', v_nes)
 print('\n', v_coms, '\n')
 
-input()
+input('Готово. Для завершения программы нажмите Enter.')
