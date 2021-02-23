@@ -11,8 +11,10 @@ import datetime
 import getpass
 import os
 import shutil
-import netmiko
+from netmiko import Netmiko
+from netmiko import ssh_exception
 import ipaddress
+import argparse
 
 
 def f_checkip(v_ip):
@@ -22,7 +24,7 @@ def f_checkip(v_ip):
     """
     try:
         ipaddress.ip_address(v_ip)
-    except (ipaddress.AddressValueError, ValueError) as e:
+    except (ipaddress.AddressValueError, ValueError):
         v_ip_description: str = 'Bad format for IP address.'
         return False, v_ip_description
     if ipaddress.ip_address('0.0.0.0') < ipaddress.ip_address(v_ip) < ipaddress.ip_address('0.255.255.255'):
@@ -91,8 +93,8 @@ def f_ne_access(v_host_ip, v_username, v_password, v_vendor, v_comsi, v_nediri):
     }
 
     try:
-        net_connect = netmiko.Netmiko(**v_ne_ssh)
-    except netmiko.ssh_exception.NetmikoTimeoutException:
+        net_connect = Netmiko(**v_ne_ssh)
+    except ssh_exception.NetmikoTimeoutException:
         print(f'Не удалось подключиться к NE c IP-адресом {v_ne_ssh["host"]}')
         return 'Не доступен'
     else:
@@ -108,10 +110,16 @@ def f_ne_access(v_host_ip, v_username, v_password, v_vendor, v_comsi, v_nediri):
         net_connect.disconnect()
         return 'SSH'
 
+parser = argparse.ArgumentParser()
+parser.add_argument("-n", "--network-elements-list", action="store", dest="n",
+                    help="Файл со списком сетевых элементов (NE)", default="ne_list.txt")
+parser.add_argument("-c", "--command-list", action="store", dest="c",
+                    help="Файл со списком консольных команд для сетевых элементов (NE)", default="ne_commands.txt")
+args = parser.parse_args()
+v_ip_list_file: str = args.n
+v_commands_file: str = args.c
 
 v_date_time: str = str(datetime.date.today())
-v_ip_list_file: str = 'ne_list.txt'
-v_commands_file: str = 'ne_commands.txt'
 v_path: str = './audit_result_' + v_date_time
 v_coms = ()  # определяем список команд
 v_nes = ()   # определяем список NE
