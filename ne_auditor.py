@@ -110,6 +110,7 @@ def f_ne_access(v_host_ip, v_username, v_password, v_vendor, v_comsi, v_nediri):
         net_connect.disconnect()
         return 'SSH'
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--network-elements-list", action="store", dest="n",
                     help="Файл со списком сетевых элементов (NE)", default="ne_list.txt")
