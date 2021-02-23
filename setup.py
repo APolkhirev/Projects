@@ -2,15 +2,13 @@
 
 from cx_Freeze import setup, Executable
 
-executables = [Executable('ne_auditor.py',
-                          icon='favicon.ico'),
-               ]
-#excludes = ['tkinter', 'email', 'html', 'http', 'urllib', 'xml', 'bz2']
+executables = [Executable('ne_auditor.py', icon='favicon.ico')]
+excludes = ['tkinter']
 
 options = {
     'build_exe': {
         'include_msvcr': True,
-#        'excludes': excludes,
+        'excludes': excludes,
     }
 }
 

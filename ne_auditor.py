@@ -25,7 +25,7 @@ def f_checkip(v_ip):
     try:
         ipaddress.ip_address(v_ip)
     except (ipaddress.AddressValueError, ValueError):
-        v_ip_description: str = 'Bad format for IP address.'
+        v_ip_description: str = 'Invalid IP-address format.'
         return False, v_ip_description
     if ipaddress.ip_address('0.0.0.0') < ipaddress.ip_address(v_ip) < ipaddress.ip_address('0.255.255.255'):
         v_ip_description = "Bad IP: Current network (only valid as source address)."
