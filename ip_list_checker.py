@@ -1,14 +1,20 @@
+# coding: utf-8
+
+"""
+Модуль для проверки списка IP-адресов.
+"""
+
 import ipaddress
 
 
-def f_checkip(v_ipp):
+def f_checkip(v_ip):
     """
     Проверка валидности IP-адреса для назначения на интерфейсе. Скорипт проверяепт как формат, так и принадлежность
     зарезервированным пулам адресов, которые не могут использоваться с этой целью.
     """
     try:
-        ipaddress.ip_address(v_ipp)
-    except (ipaddress.AddressValueError, ValueError) as e:
+        ipaddress.ip_address(v_ip)
+    except (ipaddress.AddressValueError, ValueError):
         v_ip_description: str = 'Invalid IP-address format.'
         return False, v_ip_description
     if ipaddress.ip_address('0.0.0.0') < ipaddress.ip_address(v_ip) < ipaddress.ip_address('0.255.255.255'):
@@ -66,6 +72,28 @@ def f_checkip(v_ipp):
     return True, v_ip_description
 
 
-v_ip: str = input('Введите IP-адрес: ')
-print(f_checkip(v_ip)[1])
-input('Нажмите Enter для завершени.')
+def f_ip_list_checker(v_ip_list_file):
+    v_nes = ()  # определяем список NE
+    try:
+        """ Считывание IP-адресов из файла в кортеж """
+        with open(v_ip_list_file, 'r') as v_ipreader:
+            v_readedip: str = v_ipreader.readline()
+            v_counter = 1
+            while v_readedip:
+                v_counter += 1
+                if f_checkip(v_readedip.rstrip())[0]:
+                    v_nes = v_nes + (v_readedip.rstrip(),)
+                else:
+                    print(f"Ошибка в строке [{v_counter}] "
+                          f"{v_readedip.rstrip()}: "
+                          f"{f_checkip(v_readedip.rstrip())[1]}")
+                v_readedip = v_ipreader.readline()
+            v_nes = sorted(tuple(set(v_nes)))  # сортируем и убираем дублирующиеся IP'шники
+            return v_nes
+    except FileNotFoundError:
+        print(f"Ошибка: файл ./{v_ip_list_file}, "
+              f"содержащий построчный список IP-адресов сетевых элементов, не найден.")
+
+
+if __name__ == '__main__':
+    print(f_ip_list_checker('ne_list.txt'))
