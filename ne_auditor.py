@@ -99,14 +99,12 @@ def f_ne_access(v_host_ip, v_username, v_password, v_vendor, v_comsi, v_nediri):
         return 'Не доступен'
     else:
         print("Успешное подключение к:", net_connect.find_prompt())
-        i: int = 0
-        while v_comsi:
-            v_filename: str = f"{v_nediri}" + r"\(" + f"{str(i)})_{v_comsi[i]}.log"
+        for i in enumerate(v_comsi):
+            v_filename: str = f"{v_nediri}" + r"\(" + f"{v_ne_ssh['host']})_{i[1]}.log"
             with open(v_filename, 'w') as f_output:
-                output = net_connect.send_command_timing(v_comsi[i])
+                output = net_connect.send_command_timing(i[1])
                 f_output.write(output)
                 f_output.close()
-                i += 1
         net_connect.disconnect()
         return 'SSH'
 
