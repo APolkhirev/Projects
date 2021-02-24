@@ -74,11 +74,11 @@ def f_checkip(v_ip):
 
 def f_ip_list_checker(v_ip_list_file):
     v_nes = ()  # определяем список NE
+    v_counter = 0
     try:
         """ Считывание IP-адресов из файла в кортеж """
         with open(v_ip_list_file, 'r') as v_ipreader:
             v_readedip: str = v_ipreader.readline()
-            v_counter = 1
             while v_readedip:
                 v_counter += 1
                 if f_checkip(v_readedip.rstrip())[0]:
@@ -88,7 +88,10 @@ def f_ip_list_checker(v_ip_list_file):
                           f"{v_readedip.rstrip()}: "
                           f"{f_checkip(v_readedip.rstrip())[1]}")
                 v_readedip = v_ipreader.readline()
+            v_list_len = len(v_nes)
             v_nes = sorted(tuple(set(v_nes)))  # сортируем и убираем дублирующиеся IP'шники
+            if v_list_len - len(v_nes) != 0:
+                print(f'В файле {v_ip_list_file} удалено дублей:', v_list_len - len(v_nes))
             return v_nes
     except FileNotFoundError:
         print(f"Ошибка: файл ./{v_ip_list_file}, "
