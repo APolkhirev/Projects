@@ -25,8 +25,10 @@ def f_checkip(v_ip):
         return False, """Bad IP: Reserved for the "limited broadcast" destination address."""
     elif ipaddress.IPv4Address(v_ip).is_multicast:
         return False, "Bad IP: In use for IP multicast."
+    elif ipaddress.IPv4Address(v_ip).is_link_local:
+        return False, "Bad IP: The address is reserved for link-local usage. See RFC 3927."
     elif ipaddress.IPv4Address(v_ip).is_unspecified:
-        return False, "Bad IP: The IP address is unspecified."
+        return False, "Bad IP: The IP address is unspecified. See RFC 5735 (for IPv4) or RFC 2373 (for IPv6)."
     elif ipaddress.ip_address('0.0.0.0') < ipaddress.ip_address(v_ip) < ipaddress.ip_address('0.255.255.255'):
           return False, "Bad IP: Current network (only valid as source address)."
     elif ipaddress.ip_address('100.64.0.0') < ipaddress.ip_address(v_ip) < ipaddress.ip_address('100.127.255.255'):

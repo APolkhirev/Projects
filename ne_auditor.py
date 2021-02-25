@@ -34,6 +34,12 @@ def f_ne_access(v_host_ip, v_username, v_password, v_vendor, v_comsi, v_nediri):
         return 'Не доступен'
     else:
         print("Успешное подключение к:", net_connect.find_prompt())
+        try:
+            os.mkdir(v_path + '\\' + f"NE-{v_counter} (" + x + ")")
+        except OSError:
+            print(f"Создать директорию не удалось")
+        else:
+            pass
         for i in enumerate(v_comsi):
             v_filename: str = f"{v_nediri}" + r"\(" + f"{v_ne_ssh['host']})_{i[1]}.log"
             with open(v_filename, 'w') as f_output:
@@ -90,15 +96,10 @@ except Exception as err:
 v_counter: int = 1
 v_access_via: str = ''
 for x in v_nes:
-    try:
-        os.mkdir(v_path + '\\' + f"NE-{v_counter} (" + x + ")")
-    except OSError:
-        print(f"Создать директорию не удалось")
-    else:
-        v_nedir = v_path + '\\' + f"NE-{v_counter} (" + x + ")"
-        v_access_via = f_ne_access(v_nes[v_counter-1], v_login, v_pass, "huawei", v_coms, v_nedir)
-        v_counter += 1
-        print(v_access_via)
+    v_nedir = v_path + '\\' + f"NE-{v_counter} (" + x + ")"
+    v_access_via = f_ne_access(v_nes[v_counter-1], v_login, v_pass, "huawei", v_coms, v_nedir)
+    v_counter += 1
+    print(v_access_via)
 print('\n\n', v_nes)
 print('\n', v_coms, '\n')
 
