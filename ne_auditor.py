@@ -14,6 +14,7 @@ import shutil
 import argparse
 from netmiko import Netmiko
 from netmiko import ssh_exception
+from tqdm import tqdm
 from ip_list_checker import f_ip_list_checker
 
 
@@ -30,10 +31,13 @@ def f_ne_access(v_host_ip, v_username, v_password, v_vendor, v_comsi, v_nediri):
     try:
         net_connect = Netmiko(**v_ne_ssh)
     except ssh_exception.NetmikoTimeoutException:
-        print(f'Не удалось подключиться к NE c IP-адресом {v_ne_ssh["host"]}')
-        return 'Не доступен'
+        v_out_msg = f'Не удалось подключиться к NE c IP-адресом {v_ne_ssh["host"]}. Хост недоступен.'
+        return v_out_msg
+    except ssh_exception.NetmikoAuthenticationException:
+        v_out_msg = f'Не удалось подключиться к NE c IP-адресом {v_ne_ssh["host"]}. Ошибка аутентификации.'
+        return v_out_msg
     else:
-        print("Успешное подключение к:", net_connect.find_prompt())
+        print()
         try:
             os.mkdir(v_path + '\\' + f"NE-{v_counter} (" + x + ")")
         except OSError:
@@ -46,8 +50,9 @@ def f_ne_access(v_host_ip, v_username, v_password, v_vendor, v_comsi, v_nediri):
                 output = net_connect.send_command_timing(i[1])
                 f_output.write(output)
                 f_output.close()
+                v_out_msg = f"Успешное подключение к: {net_connect.find_prompt()}. SSH"
         net_connect.disconnect()
-        return 'SSH'
+        return v_out_msg
 
 
 parser = argparse.ArgumentParser()
@@ -90,16 +95,19 @@ v_login = input("Введите логин (общий на все NE): ")
 v_pass: str = ''
 try:
     v_pass = getpass.getpass("Введите пароль: ")
+    print('='*15)
 except Exception as err:
     print('Ошибка: ', err)
 
 v_counter: int = 1
-v_access_via: str = ''
-for x in v_nes:
-    v_nedir = v_path + '\\' + f"NE-{v_counter} (" + x + ")"
-    v_access_via = f_ne_access(v_nes[v_counter-1], v_login, v_pass, "huawei", v_coms, v_nedir)
-    v_counter += 1
-    print(v_access_via)
+with tqdm(total=len(v_nes)) as pbar:
+    for x in v_nes:
+        pbar.set_description_str(f"NE-{v_counter}".center(7))
+        v_nedir = v_path + '\\' + f"NE-{v_counter} (" + x + ")"
+        v_access_via = f_ne_access(v_nes[v_counter-1], v_login, v_pass, "huawei", v_coms, v_nedir)
+        v_counter += 1
+        pbar.update(1)
+        pbar.write(v_access_via)
 print('\n\n', v_nes)
 print('\n', v_coms, '\n')
 
