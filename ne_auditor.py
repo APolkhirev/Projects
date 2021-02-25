@@ -14,7 +14,6 @@ import shutil
 import argparse
 from netmiko import Netmiko
 from netmiko import ssh_exception
-from tqdm import tqdm
 from ip_list_checker import f_ip_list_checker
 
 
@@ -100,14 +99,11 @@ except Exception as err:
     print('Ошибка: ', err)
 
 v_counter: int = 1
-with tqdm(total=len(v_nes)) as pbar:
-    for x in v_nes:
-        pbar.set_description_str(f"NE-{v_counter}".center(7))
-        v_nedir = v_path + '\\' + f"NE-{v_counter} (" + x + ")"
-        v_access_via = f_ne_access(v_nes[v_counter-1], v_login, v_pass, "huawei", v_coms, v_nedir)
-        v_counter += 1
-        pbar.update(1)
-        pbar.write(v_access_via)
+for x in v_nes:
+    v_nedir = v_path + '\\' + f"NE-{v_counter} (" + x + ")"
+    v_access_via = f_ne_access(v_nes[v_counter-1], v_login, v_pass, "huawei", v_coms, v_nedir)
+    v_counter += 1
+    print(v_access_via)
 print('\n\n', v_nes)
 print('\n', v_coms, '\n')
 
