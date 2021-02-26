@@ -35,9 +35,6 @@ v_nes = f_ip_list_checker(v_ip_list_file)   # определяем список 
 v_keys = ['hostname', 'ip', 'model', 'version', 'patch', 'status']
 v_ne_status = dict.fromkeys(v_keys)
 v_report = []
-dd_com_sw = "Software Version"
-dd_com_pw = "Patch Package Version:"
-dd_com_dw = "display device"
 
 
 try:
@@ -106,39 +103,34 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
                 with open(v_filename, 'w') as f_output:
                     output = net_connect.send_command_timing(i[1], delay_factor=.5)
                     f_output.write(output)
-                    output_splited = output.split('\n')
                     f_output.close()
                     v_out_msg = f"Успешное подключение к: {net_connect.find_prompt()}. SSH"
 
+            """ Подготовка отчёта """
             v_report[v_counter - 1]['status'] = 'Ok'
             ''' Извлекаем hostname '''
             v_report[v_counter - 1]['hostname'] = net_connect.find_prompt(delay_factor=.5).strip('<>')
             ''' Извлекаем версмю ПО '''
-            v_temp1 = net_connect.send_command_timing("display current-configuration | "
-                                                      "include !Software", delay_factor=.5)
-            v_report[v_counter - 1]['version'] = v_temp1.split()[-1]
-
+            v_report[v_counter - 1]['version'] = str(net_connect.send_command_timing("display current-configuration | "
+                                                                                     "include !Software",
+                                                                                     delay_factor=.5)).split()[-1]
             ''' Извлекаем версмю патча '''
-            v_temp2 = net_connect.send_command_timing("display patch-information", delay_factor=.5)
-            v_temp2_splited = v_temp2.split('\n')
-            for v_str_patch in v_temp2_splited:
+            for v_str_patch in str(net_connect.send_command_timing("display patch-information",
+                                                                   delay_factor=.5)).split('\n'):
                 if v_str_patch.find('Package Version') != -1:
                     v_report[v_counter - 1]['patch'] = v_str_patch.split(':')[-1]
-
             ''' Извлекаем P/N модели '''
-            v_temp3 = net_connect.send_command_timing("display device", delay_factor=.5)
-            v_temp3_splited = v_temp3.split('\n')
-            v_report[v_counter - 1]['model'] = v_temp3_splited[0].split('\'')[0]
+            v_report[v_counter - 1]['model'] = str(net_connect.send_command_timing("display device",
+                                                                                   delay_factor=.5)).split('\n')[0].split('\'')[0]
 
             net_connect.disconnect()
         v_counter += 1
-
         pbar.update(1)
 
 """ Печать результата табличкой """
 df = pandas.DataFrame.from_records(v_report)
 df.fillna('-', inplace=True)
 print('\n', df)
-
+df.to_csv(f'{v_path}\AuditReport.csv', index=False)
 
 input('Готово. Для завершения программы нажмите Enter.')
