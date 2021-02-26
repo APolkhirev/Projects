@@ -114,17 +114,19 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
             ''' Извлекаем hostname '''
             v_report[v_counter - 1]['hostname'] = net_connect.find_prompt(delay_factor=.5).strip('<>')
             ''' Извлекаем версмю ПО '''
-            v_temp1 = net_connect.send_command_timing("display "
-                                                      "current-configuration | include !Software", delay_factor=.5)
+            v_temp1 = net_connect.send_command_timing("display current-configuration | "
+                                                      "include !Software", delay_factor=.5)
             v_report[v_counter - 1]['version'] = v_temp1.split()[-1]
+
             ''' Извлекаем версмю патча '''
-            v_temp2 = net_connect.send_command_timing("display "
-                                                      "patch-information", delay_factor=.5)
+            v_temp2 = net_connect.send_command_timing("display patch-information", delay_factor=.5)
             v_temp2_splited = v_temp2.split('\n')
-            v_report[v_counter - 1]['patch'] = v_temp2_splited[1].split(':')[-1]
+            for v_str_patch in v_temp2_splited:
+                if v_str_patch.find('Package Version') != -1:
+                    v_report[v_counter - 1]['patch'] = v_str_patch.split(':')[-1]
+
             ''' Извлекаем P/N модели '''
-            v_temp3 = net_connect.send_command_timing("display "
-                                                      "device", delay_factor=.5)
+            v_temp3 = net_connect.send_command_timing("display device", delay_factor=.5)
             v_temp3_splited = v_temp3.split('\n')
             v_report[v_counter - 1]['model'] = v_temp3_splited[0].split('\'')[0]
 
