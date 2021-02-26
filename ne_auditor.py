@@ -62,7 +62,7 @@ v_login = input("Введите логин (общий на все NE): ")
 v_pass: str = ''
 try:
     v_pass = getpass.getpass("Введите пароль: ")
-    print('='*15, 'СТАРТ','='*15)
+    print('='*15, 'СТАРТ', '='*15)
 except Exception as err:
     print('Ошибка: ', err)
 
@@ -95,8 +95,6 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
                 os.mkdir(v_path + '\\' + f"NE-{v_counter} (" + v_ne_ip + ")")
             except OSError:
                 print(f"Создать директорию не удалось")
-            else:
-                pass
 
             for i in enumerate(v_coms):
                 v_filename: str = f"{v_nedir}" + r"\(" + f"{v_ne_ssh['host']})_{i[1]}.log"
@@ -106,7 +104,7 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
                     f_output.close()
                     v_out_msg = f"Успешное подключение к: {net_connect.find_prompt()}. SSH"
 
-            """ Подготовка отчёта """
+            ''' Подготовка отчёта '''
             v_report[v_counter - 1]['status'] = 'Ok'
             ''' Извлекаем hostname '''
             v_report[v_counter - 1]['hostname'] = net_connect.find_prompt(delay_factor=.5).strip('<>')
@@ -131,6 +129,6 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
 df = pandas.DataFrame.from_records(v_report)
 df.fillna('-', inplace=True)
 print('\n', df)
-df.to_csv(f'{v_path}\AuditReport.csv', index=False)
+df.to_csv(str(v_path) + r'\AuditReport.csv', index=False)
 
 input('Готово. Для завершения программы нажмите Enter.')
