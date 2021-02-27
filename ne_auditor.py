@@ -40,7 +40,7 @@ v_report = []
 try:
     shutil.rmtree(v_path, ignore_errors=False, onerror=None)
 except OSError:
-    print("Удалить директорию result не удалось")
+    pass
 
 try:
     os.mkdir(v_path)
@@ -75,9 +75,7 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
         v_ne_ssh = {
             "ip": v_ne_ip,
             "username": v_login,
-            "password": v_pass,
-            # "device_type": 'huawei',
-            # "global_delay_factor": 0.1,  # Increase all sleeps by a factor of 1
+            "password": v_pass
         }
         v_report.append(v_ne_status.copy())
         v_report[v_counter-1]['ip'] = v_ne_ip
@@ -106,16 +104,16 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
 
             ''' Подготовка отчёта '''
             v_report[v_counter - 1]['status'] = 'Ok'
-            ''' Извлекаем hostname '''
+            # Извлекаем hostname
             v_report[v_counter - 1]['hostname'] = net_connect.find_prompt().strip('<>')
-            ''' Извлекаем версмю ПО '''
+            # Извлекаем версмю ПО
             v_report[v_counter - 1]['version'] = str(net_connect.send_command_timing("display current-configuration | "
                                                                                      "include !Software")).split()[-1]
-            ''' Извлекаем версмю патча '''
+            # Извлекаем версмю патча
             for v_str_patch in str(net_connect.send_command_timing("display patch-information")).split('\n'):
                 if v_str_patch.find('Package Version') != -1:
                     v_report[v_counter - 1]['patch'] = v_str_patch.split(':')[-1]
-            ''' Извлекаем P/N модели '''
+            # Извлекаем P/N модели
             v_report[v_counter - 1]['model'] = str(net_connect.send_command_timing("display device")).split('\n')[0].split('\'')[0]
 
             net_connect.disconnect()

@@ -15,7 +15,7 @@ def f_checkip(v_ip):
     try:
         ipaddress.ip_address(v_ip)
     except (ipaddress.AddressValueError, ValueError):
-          return False, "Invalid IP-address format."
+        return False, "Invalid IP-address format."
     if ipaddress.IPv4Address(v_ip).is_link_local:
         return False, """Bad IP: Used for link-local addresses between two hosts on a single link when no IP 
         address is otherwise specified, such as would have normally been retrieved from a DHCP server."""
@@ -30,7 +30,7 @@ def f_checkip(v_ip):
     elif ipaddress.IPv4Address(v_ip).is_unspecified:
         return False, "Bad IP: The IP address is unspecified. See RFC 5735 (for IPv4) or RFC 2373 (for IPv6)."
     elif ipaddress.ip_address('0.0.0.0') < ipaddress.ip_address(v_ip) < ipaddress.ip_address('0.255.255.255'):
-          return False, "Bad IP: Current network (only valid as source address)."
+        return False, "Bad IP: Current network (only valid as source address)."
     elif ipaddress.ip_address('100.64.0.0') < ipaddress.ip_address(v_ip) < ipaddress.ip_address('100.127.255.255'):
         return False, """Bad IP: Shared address space for communications between a service provider and its 
         subscribers when using a carrier-grade NAT."""
