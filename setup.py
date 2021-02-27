@@ -13,7 +13,7 @@ options = {
 }
 
 setup(name='ne_auditor',
-      version='0.1',
+      version='0.2',
       description='Auditor for Huawei network elements',
       executables=executables,
       options=options)

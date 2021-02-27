@@ -14,7 +14,7 @@ import shutil
 import argparse
 import pandas  # для табличного отчёта
 import tqdm
-from netmiko import Netmiko
+from netmiko.huawei.huawei import HuaweiSSH
 from netmiko import ssh_exception
 from ip_list_checker import f_ip_list_checker
 
@@ -73,22 +73,22 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
         v_nedir = v_path + '\\' + f"{v_ne} (" + v_ne_ip + ")"
         v_out_msg = ''
         v_ne_ssh = {
-            "host": v_ne_ip,
+            "ip": v_ne_ip,
             "username": v_login,
             "password": v_pass,
-            "device_type": 'huawei',
-            "global_delay_factor": 0.1,  # Increase all sleeps by a factor of 1
+            # "device_type": 'huawei',
+            # "global_delay_factor": 0.1,  # Increase all sleeps by a factor of 1
         }
         v_report.append(v_ne_status.copy())
         v_report[v_counter-1]['ip'] = v_ne_ip
 
         try:
-            net_connect = Netmiko(**v_ne_ssh)
+            net_connect = HuaweiSSH(**v_ne_ssh)
         except ssh_exception.NetmikoTimeoutException:
-            pbar.write(f'Не удалось подключиться к NE c IP-адресом {v_ne_ip}. Хост недоступен.')
+            pbar.write(f'Не удалось подключиться к {v_ne_ip}. Хост недоступен по SSH.')
             v_report[v_counter-1]['status'] = f'No access'
         except ssh_exception.NetmikoAuthenticationException:
-            pbar.write(f'Не удалось подключиться к NE c IP-адресом {v_ne_ip}. Ошибка аутентификации.')
+            pbar.write(f'Не удалось подключиться к {v_ne_ip}. Ошибка аутентификации.')
             v_report[v_counter-1]['status'] = 'Auth. error'
         else:
             try:
@@ -97,7 +97,7 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
                 print(f"Создать директорию не удалось")
 
             for i in enumerate(v_coms):
-                v_filename: str = f"{v_nedir}" + r"\(" + f"{v_ne_ssh['host']})_{i[1]}.log"
+                v_filename: str = f"{v_nedir}" + r"\(" + f"{v_ne_ip})_{i[1]}.log"
                 with open(v_filename, 'w') as f_output:
                     output = net_connect.send_command_timing(i[1], delay_factor=.5)
                     f_output.write(output)
@@ -107,19 +107,16 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
             ''' Подготовка отчёта '''
             v_report[v_counter - 1]['status'] = 'Ok'
             ''' Извлекаем hostname '''
-            v_report[v_counter - 1]['hostname'] = net_connect.find_prompt(delay_factor=.5).strip('<>')
+            v_report[v_counter - 1]['hostname'] = net_connect.find_prompt().strip('<>')
             ''' Извлекаем версмю ПО '''
             v_report[v_counter - 1]['version'] = str(net_connect.send_command_timing("display current-configuration | "
-                                                                                     "include !Software",
-                                                                                     delay_factor=.5)).split()[-1]
+                                                                                     "include !Software")).split()[-1]
             ''' Извлекаем версмю патча '''
-            for v_str_patch in str(net_connect.send_command_timing("display patch-information",
-                                                                   delay_factor=.5)).split('\n'):
+            for v_str_patch in str(net_connect.send_command_timing("display patch-information")).split('\n'):
                 if v_str_patch.find('Package Version') != -1:
                     v_report[v_counter - 1]['patch'] = v_str_patch.split(':')[-1]
             ''' Извлекаем P/N модели '''
-            v_report[v_counter - 1]['model'] = str(net_connect.send_command_timing("display device",
-                                                                                   delay_factor=.5)).split('\n')[0].split('\'')[0]
+            v_report[v_counter - 1]['model'] = str(net_connect.send_command_timing("display device")).split('\n')[0].split('\'')[0]
 
             net_connect.disconnect()
         v_counter += 1
