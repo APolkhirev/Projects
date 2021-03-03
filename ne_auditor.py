@@ -75,7 +75,12 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
         v_ne_ssh = {
             "ip": v_ne_ip,
             "username": v_login,
-            "password": v_pass
+            "password": v_pass,
+            #  "banner_timeout": 30,
+            #  "conn_timeout": 15,
+            #  "auth_timeout": 5,
+            #  "global_delay_factor": 30,
+            #  "fast_cli": "True"
         }
         v_report.append(v_ne_status.copy())
         v_report[v_counter-1]['ip'] = v_ne_ip
@@ -114,9 +119,10 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
                 if v_str_patch.find('Package Version') != -1:
                     v_report[v_counter - 1]['patch'] = v_str_patch.split(':')[-1]
             # Извлекаем P/N модели
-            v_report[v_counter - 1]['model'] = str(net_connect.send_command_timing("display device")).split('\n')[0].split('\'')[0]
-
+            v_dispver_str = str(net_connect.send_command_timing("display device"))
+            v_report[v_counter - 1]['model'] = v_dispver_str.split('\n')[0].split('\'')[0]
             net_connect.disconnect()
+
         v_counter += 1
         pbar.update(1)
 
