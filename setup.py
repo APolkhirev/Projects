@@ -1,5 +1,3 @@
-# coding: utf-8
-
 from cx_Freeze import setup, Executable
 
 executables = [Executable('ne_auditor.py', icon='favicon.ico')]

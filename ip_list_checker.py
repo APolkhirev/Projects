@@ -1,10 +1,9 @@
-# coding: utf-8
-
 """
 Модуль для проверки списка IP-адресов.
 """
 
 import ipaddress
+import re
 
 
 def f_checkip(v_ip):
@@ -68,9 +67,7 @@ def f_ip_list_checker(v_ip_list_file):
                 if f_checkip(v_readedip.rstrip())[0]:
                     v_nes = v_nes + (v_readedip.rstrip(),)
                 else:
-                    print(f"Ошибка в строке [{v_counter}] "
-                          f"{v_readedip.rstrip()}: "
-                          f"{f_checkip(v_readedip.rstrip())[1]}")
+                    print(f"Ошибка в IP {v_readedip.rstrip()}: {f_checkip(v_readedip.rstrip())[1]}")
                 v_readedip = v_ipreader.readline()
             v_list_len = len(v_nes)
             v_nes = tuple(sorted(tuple(set(v_nes))))  # сортируем и убираем дублирующиеся IP'шники

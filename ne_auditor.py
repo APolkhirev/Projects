@@ -1,7 +1,5 @@
-# coding: utf-8
-
 """
-NE_auditor v.01
+NE_auditor v.03
 Скрипт написан для частных задач, решаемых в конкретном проекте и не является универсальным инструментом (пока).
 Да и может он не много (пока).
 """
@@ -77,9 +75,9 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
             "username": v_login,
             "password": v_pass,
             #  "banner_timeout": 30,
-            #  "conn_timeout": 15,
+            "conn_timeout": 5,
             #  "auth_timeout": 5,
-            #  "global_delay_factor": 30,
+            #  "global_delay_factor": 2,
             #  "fast_cli": "True"
         }
         v_report.append(v_ne_status.copy())
@@ -102,7 +100,7 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
             for i in enumerate(v_coms):
                 v_filename: str = f"{v_nedir}" + r"\(" + f"{v_ne_ip})_{i[1]}.log"
                 with open(v_filename, 'w') as f_output:
-                    output = net_connect.send_command_timing(i[1], delay_factor=.5)
+                    output = net_connect.send_command_timing(i[1], delay_factor=5)
                     f_output.write(output)
                     f_output.close()
                     v_out_msg = f"Успешное подключение к: {net_connect.find_prompt()}. SSH"
@@ -132,4 +130,4 @@ df.fillna('-', inplace=True)
 print('\n', df)
 df.to_csv(str(v_path) + r'\AuditReport.csv', index=False)
 
-input('Готово. Для завершения программы нажмите Enter.')
+input('\nГотово. Для завершения программы нажмите Enter.')
