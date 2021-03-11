@@ -95,7 +95,7 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
             try:
                 os.mkdir(v_path + '\\' + f"NE-{v_counter} (" + v_ne_ip + ")")
             except OSError:
-                print(f"Создать директорию не удалось")
+                print(f"\nСоздать директорию не удалось")
 
             for i in enumerate(v_coms):
                 v_filename: str = f"{v_nedir}" + r"\(" + f"{v_ne_ip})_{i[1]}.log"
@@ -110,7 +110,8 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
             # Извлекаем hostname
             v_report[v_counter - 1]['hostname'] = net_connect.find_prompt().strip('<>')
             # Извлекаем версмю ПО
-            v_report[v_counter - 1]['version'] = str(net_connect.send_command_timing("display version | incl VRP")).split()[-1][:-1]
+            v_report[v_counter - 1]['version'] = str(net_connect.send_command_timing("display version | "
+                                                                                     "i VRP")).split()[-1][:-1]
             # Извлекаем версмю патча
             for v_str_patch in str(net_connect.send_command_timing("display patch-information")).split('\n'):
                 if v_str_patch.find('Package Version') != -1:
