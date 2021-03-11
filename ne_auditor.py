@@ -75,7 +75,7 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
             "username": v_login,
             "password": v_pass,
             #  "banner_timeout": 30,
-            "conn_timeout": 5,
+            "conn_timeout": 15,
             #  "auth_timeout": 5,
             #  "global_delay_factor": 2,
             #  "fast_cli": "True"
@@ -110,8 +110,7 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
             # Извлекаем hostname
             v_report[v_counter - 1]['hostname'] = net_connect.find_prompt().strip('<>')
             # Извлекаем версмю ПО
-            v_report[v_counter - 1]['version'] = str(net_connect.send_command_timing("display current-configuration | "
-                                                                                     "include !Software")).split()[-1]
+            v_report[v_counter - 1]['version'] = str(net_connect.send_command_timing("display version | incl VRP")).split()[-1][:-1]
             # Извлекаем версмю патча
             for v_str_patch in str(net_connect.send_command_timing("display patch-information")).split('\n'):
                 if v_str_patch.find('Package Version') != -1:
