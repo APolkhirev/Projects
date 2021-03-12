@@ -74,12 +74,8 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
             "ip": v_ne_ip,
             "username": v_login,
             "password": v_pass,
-            #  "banner_timeout": 30,
-            "conn_timeout": 15,
-            #  "auth_timeout": 5,
-            #  "global_delay_factor": 2,
-            #  "fast_cli": "True"
-        }
+            "conn_timeout": 15
+         }
         v_report.append(v_ne_status.copy())
         v_report[v_counter-1]['ip'] = v_ne_ip
 
