@@ -30,7 +30,7 @@ v_date_time: str = str(datetime.date.today())
 v_path: str = './audit_result_' + v_date_time
 v_coms = ()  # определяем список команд
 v_nes = f_ip_list_checker(v_ip_list_file)   # определяем список NE
-v_keys = ['hostname', 'ip', 'model', 'version', 'patch', 'status']
+v_keys = ['hostname', 'ip', 'status']
 v_ne_status = dict.fromkeys(v_keys)
 v_report = []
 
@@ -87,7 +87,7 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
             net_connect = HuaweiSSH(**v_ne_ssh)
         except ssh_exception.NetmikoTimeoutException:
             pbar.write(f'Не удалось подключиться к {v_ne_ip}. Хост недоступен по SSH.')
-            v_report[v_counter-1]['status'] = f'No access'
+            v_report[v_counter-1]['status'] = 'No access'
         except ssh_exception.NetmikoAuthenticationException:
             pbar.write(f'Не удалось подключиться к {v_ne_ip}. Ошибка аутентификации.')
             v_report[v_counter-1]['status'] = 'Auth. error'
@@ -109,17 +109,7 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
             v_report[v_counter - 1]['status'] = 'Ok'
             # Извлекаем hostname
             v_report[v_counter - 1]['hostname'] = net_connect.find_prompt().strip('<>')
-            # Извлекаем версмю ПО
-            v_report[v_counter - 1]['version'] = str(net_connect.send_command_timing("display version | "
-                                                                                     "i VRP")).split()[-1][:-1]
-            # Извлекаем версмю патча
-            for v_str_patch in str(net_connect.send_command_timing("display patch-information")).split('\n'):
-                if v_str_patch.find('Package Version') != -1:
-                    v_report[v_counter - 1]['patch'] = v_str_patch.split(':')[-1]
-            # Извлекаем P/N модели
-            v_dispver_str = str(net_connect.send_command_timing("display device"))
-            v_report[v_counter - 1]['model'] = v_dispver_str.split('\n')[0].split('\'')[0]
-            net_connect.disconnect()
+
 
         v_counter += 1
         pbar.update(1)
