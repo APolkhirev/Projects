@@ -71,7 +71,7 @@ def f_ip_list_checker(v_ip_list_file):
                     print(f"Ошибка в IP {v_readedip.rstrip()}: {f_checkip(v_readedip.rstrip())[1]}")
                 v_readedip = v_ipreader.readline()
             v_list_len = len(v_nes)
-            v_nes = tuple(sorted(tuple(set(v_nes))))  # сортируем и убираем дублирующиеся IP'шники
+            v_nes = tuple(tuple(set(v_nes)))  # убираем дублирующиеся IP'шники
             if v_list_len - len(v_nes) != 0:
                 print(f'В файле {v_ip_list_file} удалено дублей:', v_list_len - len(v_nes))
             return v_nes
