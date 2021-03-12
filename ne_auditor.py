@@ -106,7 +106,6 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
             # Извлекаем hostname
             v_report[v_counter - 1]['hostname'] = net_connect.find_prompt().strip('<>')
 
-
         v_counter += 1
         pbar.update(1)
 
