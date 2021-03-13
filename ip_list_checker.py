@@ -67,7 +67,8 @@ def f_ip_list_checker(v_ip_list_file):
                 if f_checkip(v_readedip.rstrip())[0]:
                     v_nes = v_nes + (v_readedip.rstrip(),)
                 else:
-                    print(f"Ошибка в строке {v_counter} (IP {v_readedip.rstrip()}): {f_checkip(v_readedip.rstrip())[1]}")
+                    print(f"Ошибка в строке {v_counter} (IP {v_readedip.rstrip()}): "
+                          f"{f_checkip(v_readedip.rstrip())[1]}")
                 v_readedip = v_ipreader.readline()
             v_list_len = len(v_nes)
             v_nes = sorted(tuple(set(v_nes)), key=ipaddress.IPv4Address)  # дедубликация и сортировка IP-адресов
