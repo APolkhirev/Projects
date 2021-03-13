@@ -1,5 +1,6 @@
 """
 NE_auditor v.04
+Скрипт для аудита сети.
 """
 
 
@@ -10,8 +11,7 @@ import shutil
 import argparse
 import pandas  # для табличного отчёта
 import tqdm
-from netmiko.huawei.huawei import HuaweiSSH
-from netmiko import ssh_exception
+from netmiko import ssh_exception, ConnectHandler
 from ip_list_checker import f_ip_list_checker
 
 
@@ -50,7 +50,7 @@ try:
         while v_line:
             v_coms = v_coms + (v_line.rstrip(),)
             v_line = v_commreader.readline()
-        v_coms = tuple(set(v_coms))  # убираем дублирующиеся команды
+        v_coms = tuple(set(v_coms))  # дедубликация команд
 except FileNotFoundError:
     print(f"Ошибка: файл ./{v_commands_file}, содержащий построчный список команд, не найден.")
 
@@ -69,16 +69,17 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
         v_nedir = v_path + '\\' + f"{v_ne} (" + v_ne_ip + ")"
         v_out_msg = ''
         v_ne_ssh = {
-            "ip": v_ne_ip,
-            "username": v_login,
-            "password": v_pass,
-            "conn_timeout": 15
+            'device_type': 'autodetect',
+            'ip': v_ne_ip,
+            'username': v_login,
+            'password': v_pass,
+            'conn_timeout': 15
          }
         v_report.append(v_ne_status.copy())
         v_report[v_counter-1]['ip'] = v_ne_ip
 
         try:
-            net_connect = HuaweiSSH(**v_ne_ssh)
+            net_connect = ConnectHandler(**v_ne_ssh)
         except ssh_exception.NetmikoTimeoutException:
             pbar.write(f'Не удалось подключиться к {v_ne_ip}. Хост недоступен по SSH.')
             v_report[v_counter-1]['status'] = 'No access'
@@ -102,7 +103,7 @@ with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
             ''' Подготовка отчёта '''
             v_report[v_counter - 1]['status'] = 'Ok'
             # Извлекаем hostname
-            v_report[v_counter - 1]['hostname'] = net_connect.find_prompt().strip('<>')
+            v_report[v_counter - 1]['hostname'] = net_connect.find_prompt().strip('<>#')
 
         v_counter += 1
         pbar.update(1)

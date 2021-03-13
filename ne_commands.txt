@@ -1,4 +1,2 @@
-display current-configuration
-display version
-display patch-information
-display elabel
+show version
+show run
