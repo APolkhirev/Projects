@@ -51,7 +51,7 @@ def f_comand_outputs_to_files(comands_list, ne_ip, directory_name, ssh, dev_type
         c_count += 1
 
 
-def f_device_caller(device_list, console_camm, login, password):
+def f_device_caller(device_list, cons_comm, login, password):
     counter: int = 0
     for v_ne_ip in device_list:
         v_ne = f'NE-{counter}'
@@ -64,23 +64,23 @@ def f_device_caller(device_list, console_camm, login, password):
             'conn_timeout': 15
         }
         v_report.append(v_ne_status.copy())
-        v_report[counter]['ip'] = v_ne_ssh['ip']
+        v_report[counter]['ip'] = v_ne_ip
 
         try:
             net_connect = ConnectHandler(**v_ne_ssh)
         except ssh_exception.NetmikoAuthenticationException:
-            pbar.write(f'Не удалось подключиться к {v_ne_ssh["ip"]}. Ошибка аутентификации.')
+            pbar.write(f'Не удалось подключиться к {v_ne_ip}. Ошибка аутентификации.')
             v_report[counter]['status'] = 'Auth. error'
             pbar.update(1)
         except ssh_exception:
-            pbar.write(f'Не удалось подключиться к {v_ne_ssh["ip"]}. Хост недоступен по SSH.')
+            pbar.write(f'Не удалось подключиться к {v_ne_ip}. Хост недоступен по SSH.')
             v_report[counter]['status'] = 'No SSH access'
             pbar.update(1)
         else:
             guesser = SSHDetect(**v_ne_ssh)
             v_report[counter]['device_type'] = guesser.autodetect()
-            f_dir_creator(v_path + '\\' + f"NE-{counter} ({v_ne_ssh['ip']})")
-            f_comand_outputs_to_files(console_camm, v_ne_ssh['ip'], v_nedir, net_connect, v_report[counter]['device_type'])
+            f_dir_creator(v_path + '\\' + f"NE-{counter} ({v_ne_ip})")
+            f_comand_outputs_to_files(cons_comm, v_ne_ip, v_nedir, net_connect, v_report[counter]['device_type'])
             v_report[counter]['status'] = 'Ok'
             v_report[counter]['hostname'] = net_connect.find_prompt().strip('<>#')
             net_connect.disconnect()
