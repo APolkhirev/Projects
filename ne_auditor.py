@@ -20,7 +20,7 @@ def f_commands_reader(commands_file):
     try:
         with open(commands_file, 'r') as commreader:
             coms = yaml.safe_load(commreader)
-            pprint(coms)
+            # pprint(coms)
     except FileNotFoundError:
         print(f"Ошибка: файл ./{v_commands_file}, в формате YAML, не найден.")
     return coms
@@ -45,7 +45,7 @@ def f_comand_outputs_to_files(comands_list, ne_ip, directory_name, ssh, dev_type
         v_filename: str = f"{directory_name}" + r"\(" + f"{ne_ip})_{i[1]}.log"
         print(i[1])
         with open(v_filename, 'w') as f_output:
-            output = ssh.send_command_timing(i[1], delay_factor=5)
+            output = ssh.send_command_timing(i[1]) #, delay_factor=5)
             f_output.write(output)
             f_output.close()
         c_count += 1
@@ -121,7 +121,7 @@ if __name__ == '__main__':
     """ Вывод отчёта """
     df = pandas.DataFrame.from_records(v_report)
     df.fillna('-', inplace=True)
-    print('\n', df)
+    pprint(df)
     df.to_csv(str(v_path) + r'\AuditReport.csv', index=False)
 
     input('\nГотово. Для завершения программы нажмите Enter.')

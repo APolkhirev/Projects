@@ -1,11 +1,14 @@
 cisco_ios:
 - show version
-- show run
+- show running-config
 huawei:
 - display current-configuration
 - display version
 - display elabel
 juniper:
 - show configuration
-extreme:
+- show version
+extreme_exos:
 - show configuration
+- show switch
+- show version
