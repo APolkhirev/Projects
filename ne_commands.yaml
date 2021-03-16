@@ -1,0 +1,11 @@
+cisco_ios:
+- show version
+- show run
+huawei:
+- display current-configuration
+- display version
+- display elabel
+juniper:
+- show configuration
+extreme:
+- show configuration

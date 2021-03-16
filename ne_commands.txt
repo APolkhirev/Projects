@@ -1,2 +1,5 @@
 show version
 show run
+display current-configuration
+display version
+display elabel
