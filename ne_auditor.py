@@ -38,16 +38,14 @@ def f_dir_creator(dir_name):
         print(f"Создать директорию {dir_name} не удалось")
 
 
-def f_comand_outputs_to_files(comands_list, ne_ip, directory_name, ssh, dev_type):
-    c_count = 0
+def f_comand_outputs_to_files(comands_list, ne_ip, directory_name, net_connect, dev_type):
     c_list = tuple(sorted(comands_list[dev_type]))
     for i in enumerate(c_list):
         v_filename: str = f"{directory_name}" + r"\(" + f"{ne_ip})_{i[1]}.log"
         with open(v_filename, 'w') as f_output:
-            output = ssh.send_command_timing(i[1], delay_factor=5)
+            output = net_connect.send_command_timing(i[1], delay_factor=5)
             f_output.write(output)
             f_output.close()
-        c_count += 1
 
 
 def f_device_caller(device_list, cons_comm, login, password):
@@ -77,11 +75,12 @@ def f_device_caller(device_list, cons_comm, login, password):
             pbar.update(1)
         else:
             guesser = SSHDetect(**v_ne_ssh)
-            v_report[counter]['device_type'] = guesser.autodetect()
+            v_dtype = guesser.autodetect()
             f_dir_creator(v_path + '\\' + f"NE-{counter} ({v_ne_ip})")
-            f_comand_outputs_to_files(cons_comm, v_ne_ip, v_nedir, net_connect, v_report[counter]['device_type'])
+            f_comand_outputs_to_files(cons_comm, v_ne_ip, v_nedir, net_connect, v_dtype)
             v_report[counter]['status'] = 'Ok'
             v_report[counter]['hostname'] = net_connect.find_prompt().strip('<>#')
+            v_report[counter]['device_type'] = v_dtype
             net_connect.disconnect()
             pbar.update(1)
         counter += 1
