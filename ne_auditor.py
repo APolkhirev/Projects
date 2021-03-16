@@ -43,9 +43,8 @@ def f_comand_outputs_to_files(comands_list, ne_ip, directory_name, ssh, dev_type
     c_list = tuple(sorted(comands_list[dev_type]))
     for i in enumerate(c_list):
         v_filename: str = f"{directory_name}" + r"\(" + f"{ne_ip})_{i[1]}.log"
-        print(i[1])
         with open(v_filename, 'w') as f_output:
-            output = ssh.send_command_timing(i[1]) #, delay_factor=5)
+            output = ssh.send_command_timing(i[1], delay_factor=5)
             f_output.write(output)
             f_output.close()
         c_count += 1
