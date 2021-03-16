@@ -1,3 +1,5 @@
+display current
+display elabel
 show version
 show run
 display current-configuration

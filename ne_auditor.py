@@ -92,7 +92,7 @@ if __name__ == '__main__':
     parser.add_argument("-n", "--network-elements-list", action="store", dest="n",
                         help="Файл со списком сетевых элементов (NE)", default="ne_list.txt")
     parser.add_argument("-c", "--command-list", action="store", dest="c",
-                        help="Файл со списком консольных команд для сетевых элементов (NE)", default="ne_commands.yaml")
+                        help="Файл со списком консольных команд для сетевых элементов (NE)", default="ne_commands.yml")
     args = parser.parse_args()
     v_ip_list_file: str = args.n
     v_commands_file: str = args.c
