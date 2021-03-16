@@ -64,6 +64,9 @@ def f_device_caller(device_list, cons_comm, login, password):
         v_report[counter]['ip'] = v_ne_ip
 
         try:
+            guesser = SSHDetect(**v_ne_ssh)
+            v_dtype = guesser.autodetect()
+            v_ne_ssh['device_type'] = v_dtype
             net_connect = ConnectHandler(**v_ne_ssh)
         except ssh_exception.NetmikoAuthenticationException:
             pbar.write(f'Не удалось подключиться к {v_ne_ip}. Ошибка аутентификации.')
@@ -74,8 +77,6 @@ def f_device_caller(device_list, cons_comm, login, password):
             v_report[counter]['status'] = 'No SSH access'
             pbar.update(1)
         else:
-            guesser = SSHDetect(**v_ne_ssh)
-            v_dtype = guesser.autodetect()
             f_dir_creator(v_path + '\\' + f"NE-{counter} ({v_ne_ip})")
             f_comand_outputs_to_files(cons_comm, v_ne_ip, v_nedir, net_connect, v_dtype)
             v_report[counter]['status'] = 'Ok'
