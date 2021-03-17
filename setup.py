@@ -11,7 +11,7 @@ options = {
 }
 
 setup(name='ne_auditor',
-      version='0.2',
-      description='Auditor for Huawei network elements',
+      version='0.5',
+      description='Multivendor Auditor for Network Elements',
       executables=executables,
       options=options)

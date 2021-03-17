@@ -13,6 +13,8 @@ import pandas  # для табличного отчёта
 import tqdm
 from pprint import pprint
 from netmiko import ssh_exception, ConnectHandler, SSHDetect
+from concurrent.futures import ThreadPoolExecutor
+import logging
 from ip_list_checker import f_ip_list_checker
 
 
@@ -41,11 +43,35 @@ def f_dir_creator(dir_name):
 def f_comand_outputs_to_files(comands_list, ne_ip, directory_name, net_connect, dev_type):
     c_list = tuple(sorted(comands_list[dev_type]))
     for i in enumerate(c_list):
-        v_filename: str = f"{directory_name}" + r"\(" + f"{ne_ip})_{i[1]}.log"
+        v_filename: str = f"{directory_name}" + r"/(" + f"{ne_ip})_{i[1]}.log"
         with open(v_filename, 'w') as f_output:
             output = net_connect.send_command_timing(i[1], delay_factor=5)
             f_output.write(output)
             f_output.close()
+
+
+def f_send_commands_to_device(id_count: int, device, command_set, nedir):
+    try:
+        guesser = SSHDetect(**device)
+        v_dtype = guesser.autodetect()
+        device['device_type'] = v_dtype
+        net_connect = ConnectHandler(**device)
+    except ssh_exception.NetmikoAuthenticationException:
+        pbar.write(f'Не удалось подключиться к {device["ip"]}. Ошибка аутентификации.')
+        v_report[id_count]['status'] = 'Auth. error'
+        pbar.update(1)
+    except ssh_exception:
+        pbar.write(f'Не удалось подключиться к {device["ip"]}. Хост недоступен по SSH.')
+        v_report[id_count]['status'] = 'No SSH access'
+        pbar.update(1)
+    else:
+        f_dir_creator(v_path + f"/NE-{id_count} ({device['ip']})")
+        f_comand_outputs_to_files(command_set, device["ip"], nedir, net_connect, v_dtype)
+        v_report[id_count]['status'] = 'Ok'
+        v_report[id_count]['hostname'] = net_connect.find_prompt().strip('<>#')
+        v_report[id_count]['device_type'] = v_dtype
+        net_connect.disconnect()
+        pbar.update(1)
 
 
 def f_device_caller(device_list, cons_comm, login, password):
@@ -63,31 +89,18 @@ def f_device_caller(device_list, cons_comm, login, password):
         v_report.append(v_ne_status.copy())
         v_report[counter]['ip'] = v_ne_ip
 
-        try:
-            guesser = SSHDetect(**v_ne_ssh)
-            v_dtype = guesser.autodetect()
-            v_ne_ssh['device_type'] = v_dtype
-            net_connect = ConnectHandler(**v_ne_ssh)
-        except ssh_exception.NetmikoAuthenticationException:
-            pbar.write(f'Не удалось подключиться к {v_ne_ip}. Ошибка аутентификации.')
-            v_report[counter]['status'] = 'Auth. error'
-            pbar.update(1)
-        except ssh_exception:
-            pbar.write(f'Не удалось подключиться к {v_ne_ip}. Хост недоступен по SSH.')
-            v_report[counter]['status'] = 'No SSH access'
-            pbar.update(1)
-        else:
-            f_dir_creator(v_path + '\\' + f"NE-{counter} ({v_ne_ip})")
-            f_comand_outputs_to_files(cons_comm, v_ne_ip, v_nedir, net_connect, v_dtype)
-            v_report[counter]['status'] = 'Ok'
-            v_report[counter]['hostname'] = net_connect.find_prompt().strip('<>#')
-            v_report[counter]['device_type'] = v_dtype
-            net_connect.disconnect()
-            pbar.update(1)
+        f_send_commands_to_device(counter, v_ne_ssh, cons_comm, v_nedir)
+
         counter += 1
 
 
 if __name__ == '__main__':
+
+    logging.getLogger("paramiko").setLevel(logging.WARNING)
+
+    logging.basicConfig(
+        format='%(threadName)s %(name)s %(levelname)s: %(message)s',
+        level=logging.INFO)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--network-elements-list", action="store", dest="n",
