@@ -9,9 +9,9 @@ import getpass
 import os
 import shutil
 import argparse
-import pandas  # для табличного отчёта
+import pandas
+from tabulate import tabulate
 #  import tqdm
-from pprint import pprint
 from netmiko import ssh_exception, ConnectHandler, SSHDetect
 from concurrent.futures import ThreadPoolExecutor
 import logging
@@ -121,21 +121,21 @@ if __name__ == '__main__':
     f_dir_creator(v_path)
     v_coms = f_commands_reader(v_commands_file)  # Считываем команды из файла в переменную
 
-    v_login = input("Введите логин (общий на все NE): ")
+    v_login = input("Login: ")
     v_pass: str = ''
     try:
-        v_pass = getpass.getpass("Введите пароль: ")
-        print('\n', '='*20, 'START', '='*20)
+        v_pass = getpass.getpass("Password: ")
+        print('\nStart:')
     except Exception as err:
         print('Ошибка: ', err)
 
     f_device_caller(v_nes, v_coms, v_login, v_pass)
-
+    print('Stop.\n')
     """ Вывод отчёта """
-    print('\n', '=' * 20, 'REPORT', '=' * 20)
-    df = pandas.DataFrame.from_records(v_report)
+
+    df = pandas.DataFrame(v_report)
     df.fillna('-', inplace=True)
-    pprint(df)
+    print(tabulate(df, headers='keys', tablefmt='rst'))
     df.to_csv(str(v_path) + r'\AuditReport.csv', index=False)
 
-    input('\nГотово. Для завершения программы нажмите Enter.')
+    input('\nDone. Press ENTER to exit.')
