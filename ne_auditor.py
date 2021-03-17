@@ -91,9 +91,7 @@ def f_device_caller(device_list, cons_comm, login, password):
             }
             v_report.append(v_ne_status.copy())
             v_report[counter]['ip'] = v_ne_ip
-
             executor.submit(f_send_commands_to_device, counter, v_ne_ssh, cons_comm, v_nedir)
-
             counter += 1
 
 
@@ -131,7 +129,6 @@ if __name__ == '__main__':
 
     f_device_caller(v_nes, v_coms, v_login, v_pass)
     print('Stop.\n')
-    """ Вывод отчёта """
 
     df = pandas.DataFrame(v_report)
     df.fillna('-', inplace=True)
