@@ -11,7 +11,7 @@ options = {
 }
 
 setup(name='ne_auditor',
-      version='0.5',
+      version='0.6',
       description='Multivendor Auditor for Network Elements',
       executables=executables,
       options=options)

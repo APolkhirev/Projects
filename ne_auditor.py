@@ -1,5 +1,5 @@
 """
-NE_auditor v.05
+NE_auditor v0.6
 Скрипт для аудита сети.
 """
 
@@ -10,7 +10,7 @@ import os
 import shutil
 import argparse
 import pandas  # для табличного отчёта
-import tqdm
+#  import tqdm
 from pprint import pprint
 from netmiko import ssh_exception, ConnectHandler, SSHDetect
 from concurrent.futures import ThreadPoolExecutor
@@ -41,63 +41,65 @@ def f_dir_creator(dir_name):
 
 
 def f_comand_outputs_to_files(comands_list, ne_ip, directory_name, net_connect, dev_type):
+    cmdsend_msg = "---> {} Send command:   '{}' to {}"
     c_list = tuple(sorted(comands_list[dev_type]))
     for i in enumerate(c_list):
         v_filename: str = f"{directory_name}" + r"/(" + f"{ne_ip})_{i[1]}.log"
         with open(v_filename, 'w') as f_output:
+            logging.info(cmdsend_msg.format(datetime.datetime.now().time(), i[1], ne_ip))
             output = net_connect.send_command_timing(i[1], delay_factor=5)
             f_output.write(output)
             f_output.close()
 
 
 def f_send_commands_to_device(id_count: int, device, command_set, nedir):
+    ip = device['ip']
+    start_msg = '===> {} Connection: {}'
+    received_msg = '<=== {} Received:   {}'
+    logging.info(start_msg.format(datetime.datetime.now().time(), ip))
     try:
         guesser = SSHDetect(**device)
         v_dtype = guesser.autodetect()
         device['device_type'] = v_dtype
         net_connect = ConnectHandler(**device)
     except ssh_exception.NetmikoAuthenticationException:
-        pbar.write(f'Не удалось подключиться к {device["ip"]}. Ошибка аутентификации.')
         v_report[id_count]['status'] = 'Auth. error'
-        pbar.update(1)
     except ssh_exception:
-        pbar.write(f'Не удалось подключиться к {device["ip"]}. Хост недоступен по SSH.')
         v_report[id_count]['status'] = 'No SSH access'
-        pbar.update(1)
     else:
-        f_dir_creator(v_path + f"/NE-{id_count} ({device['ip']})")
-        f_comand_outputs_to_files(command_set, device["ip"], nedir, net_connect, v_dtype)
+        f_dir_creator(v_path + f"/NE-{id_count} ({ip})")
+        f_comand_outputs_to_files(command_set, ip, nedir, net_connect, v_dtype)
+        logging.info(received_msg.format(datetime.datetime.now().time(), ip))
         v_report[id_count]['status'] = 'Ok'
         v_report[id_count]['hostname'] = net_connect.find_prompt().strip('<>#')
         v_report[id_count]['device_type'] = v_dtype
         net_connect.disconnect()
-        pbar.update(1)
 
 
 def f_device_caller(device_list, cons_comm, login, password):
     counter: int = 0
-    for v_ne_ip in device_list:
-        v_ne = f'NE-{counter}'
-        v_nedir = v_path + '\\' + f'{v_ne} (' + v_ne_ip + ')'
-        v_ne_ssh = {
-            'device_type': 'autodetect',
-            'ip': v_ne_ip,
-            'username': login,
-            'password': password,
-            'conn_timeout': 15
-        }
-        v_report.append(v_ne_status.copy())
-        v_report[counter]['ip'] = v_ne_ip
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        for v_ne_ip in device_list:
+            v_ne = f'NE-{counter}'
+            v_nedir = v_path + '\\' + f'{v_ne} (' + v_ne_ip + ')'
+            v_ne_ssh = {
+                'device_type': 'autodetect',
+                'ip': v_ne_ip,
+                'username': login,
+                'password': password,
+                'conn_timeout': 15
+            }
+            v_report.append(v_ne_status.copy())
+            v_report[counter]['ip'] = v_ne_ip
 
-        f_send_commands_to_device(counter, v_ne_ssh, cons_comm, v_nedir)
+            executor.submit(f_send_commands_to_device, counter, v_ne_ssh, cons_comm, v_nedir)
 
-        counter += 1
+            counter += 1
 
 
 if __name__ == '__main__':
 
     logging.getLogger("paramiko").setLevel(logging.WARNING)
-
     logging.basicConfig(
         format='%(threadName)s %(name)s %(levelname)s: %(message)s',
         level=logging.INFO)
@@ -123,14 +125,14 @@ if __name__ == '__main__':
     v_pass: str = ''
     try:
         v_pass = getpass.getpass("Введите пароль: ")
-        print('='*15, 'СТАРТ', '='*15)
+        print('\n', '='*20, 'START', '='*20)
     except Exception as err:
         print('Ошибка: ', err)
 
-    with tqdm.tqdm(total=len(v_nes), desc="Обработано NE") as pbar:
-        f_device_caller(v_nes, v_coms, v_login, v_pass)
+    f_device_caller(v_nes, v_coms, v_login, v_pass)
 
     """ Вывод отчёта """
+    print('\n', '=' * 20, 'REPORT', '=' * 20)
     df = pandas.DataFrame.from_records(v_report)
     df.fillna('-', inplace=True)
     pprint(df)
