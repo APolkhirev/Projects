@@ -22,13 +22,13 @@ def f_commands_reader(commands_file):
     try:
         with open(commands_file, 'r') as commreader:
             coms = yaml.safe_load(commreader)
-            # pprint(coms)
     except FileNotFoundError:
         print(f"Ошибка: файл ./{v_commands_file}, в формате YAML, не найден.")
     return coms
 
 
 def f_dir_creator(dir_name):
+    dir_creator_err_msg = '{} Failed to create a directory: {}'
     try:
         shutil.rmtree(dir_name, ignore_errors=False, onerror=None)
     except OSError:
@@ -37,7 +37,7 @@ def f_dir_creator(dir_name):
     try:
         os.mkdir(dir_name)
     except OSError:
-        print(f"Создать директорию {dir_name} не удалось")
+        logging.info(dir_creator_err_msg.format(datetime.datetime.now().time(), dir_name))
 
 
 def f_comand_outputs_to_files(comands_list, ne_ip, directory_name, net_connect, dev_type):
@@ -56,6 +56,7 @@ def f_send_commands_to_device(id_count: int, device, command_set, nedir):
     ip = device['ip']
     start_msg = '===> {} Connection: {}'
     received_msg = '<=== {} Received:   {}'
+    received_err_msg = '<~~~ {} Received:   {} / {}'
     logging.info(start_msg.format(datetime.datetime.now().time(), ip))
     try:
         guesser = SSHDetect(**device)
@@ -64,8 +65,10 @@ def f_send_commands_to_device(id_count: int, device, command_set, nedir):
         net_connect = ConnectHandler(**device)
     except ssh_exception.NetmikoAuthenticationException:
         v_report[id_count]['status'] = 'Auth. error'
+        logging.info(received_err_msg.format(datetime.datetime.now().time(), ip, 'Authentication error'))
     except ssh_exception:
         v_report[id_count]['status'] = 'No SSH access'
+        logging.info(received_err_msg.format(datetime.datetime.now().time(), ip, 'SSH access error'))
     else:
         f_dir_creator(v_path + f"/NE-{id_count} ({ip})")
         f_comand_outputs_to_files(command_set, ip, nedir, net_connect, v_dtype)
