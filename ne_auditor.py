@@ -7,6 +7,7 @@ import yaml
 import datetime
 import getpass
 import os
+import sys
 import shutil
 import argparse
 import pandas
@@ -19,11 +20,13 @@ from ip_list_checker import f_ip_list_checker
 
 
 def f_commands_reader(commands_file):
+    commands_reader_err_msg = '{} The ./{} file in YAML format was not found.'
     try:
         with open(commands_file, 'r') as commreader:
             coms = yaml.safe_load(commreader)
     except FileNotFoundError:
-        print(f"Ошибка: файл ./{v_commands_file}, в формате YAML, не найден.")
+        logging.info(commands_reader_err_msg.format(datetime.datetime.now().time(), v_commands_file))
+        sys.exit(1)
     return coms
 
 
