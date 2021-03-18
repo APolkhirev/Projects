@@ -62,7 +62,7 @@ def f_send_commands_to_device(id_count: int, device, command_set, nedir):
     start_msg = '===> {} Connection: {}'
     received_msg = '<=== {} Received:   {}'
     received_err_msg = '<~~~ {} Received:   {} / {}'
-    time.sleep(0.2 * random.randint(1,10))
+    time.sleep(0.1 * random.randint(1, 3) + (id_count % 10)*0.3)
     logging.info(start_msg.format(datetime.datetime.now().time(), ip))
     try:
         guesser = SSHDetect(**device)
