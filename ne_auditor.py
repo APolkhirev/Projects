@@ -114,7 +114,7 @@ def f_device_caller(device_list, cons_comm, login, password):
 
 if __name__ == '__main__':
 
-    logging.getLogger("paramiko").setLevel(logging.WARNING)
+    logging.getLogger('paramiko').setLevel(logging.WARNING)
     logging.basicConfig(
         format='%(threadName)s %(name)s %(levelname)s: %(message)s',
         level=logging.INFO)
@@ -148,7 +148,7 @@ if __name__ == '__main__':
         v_pass = getpass.getpass("Password: ")
         print('\nStart:')
     except Exception as err:
-        print('Ошибка: ', err)
+        print('Error: ', err)
 
     f_device_caller(v_nes, v_coms, v_login, v_pass)
     print('Stop.\n')
