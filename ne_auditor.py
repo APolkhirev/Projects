@@ -21,6 +21,9 @@ import logging
 from ip_list_checker import f_ip_list_checker
 
 
+MAX_CONCURRENT_SESSIONS = 10
+
+
 def f_commands_reader(commands_file):
     commands_reader_err_msg = '{} The ./{} file in YAML format was not found.'
     try:
@@ -92,7 +95,7 @@ def f_device_caller(device_list, cons_comm, login, password):
     counter: int = 0
     manager = enlighten.get_manager()
     pbar = manager.counter(total=len(device_list), desc='Devices processed:', unit='NE', color='red')
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_SESSIONS) as executor:
         for v_ne_ip in device_list:
             v_ne = f'NE-{counter}'
             v_nedir = v_path + '\\' + f'{v_ne} (' + v_ne_ip + ')'
