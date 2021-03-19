@@ -1,5 +1,5 @@
 pandas
-tqdm
+enlighten
 netmiko
 pyyaml
 tabulate

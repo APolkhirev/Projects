@@ -1,5 +1,5 @@
 """
-NE_auditor v0.6
+NE_auditor v0.7
 Скрипт для аудита сети.
 """
 
@@ -14,7 +14,6 @@ import pandas
 import time
 import random
 from tabulate import tabulate
-# import tqdm
 import enlighten
 from netmiko import ssh_exception, ConnectHandler, SSHDetect
 from concurrent.futures import ThreadPoolExecutor
@@ -50,7 +49,7 @@ def f_comand_outputs_to_files(comands_list, ne_ip, directory_name, net_connect, 
     cmdsend_msg = "---> {} Push:       {}   / {}: {}"
     c_list = tuple(sorted(comands_list[dev_type]))
     for i in enumerate(c_list):
-        v_filename: str = f"{directory_name}" + r"/(" + f"{ne_ip})_{i[1]}.log"
+        v_filename: str = f"{directory_name}" + r"/(" + f"{ne_ip})_{str(i[1]).replace('|', 'I')}.log"
         with open(v_filename, 'w') as f_output:
             logging.info(cmdsend_msg.format(datetime.datetime.now().time(), ne_ip, dev_type, i[1]))
             output = net_connect.send_command_timing(i[1], delay_factor=5)
@@ -73,9 +72,11 @@ def f_send_commands_to_device(id_count: int, device, command_set, nedir, v_pbar)
     except ssh_exception.NetmikoAuthenticationException:
         v_report[id_count]['status'] = 'Auth. error'
         logging.info(received_err_msg.format(datetime.datetime.now().time(), ip, 'Authentication error'))
+        v_pbar.update()
     except ssh_exception:
         v_report[id_count]['status'] = 'No SSH access'
         logging.info(received_err_msg.format(datetime.datetime.now().time(), ip, 'SSH access error'))
+        v_pbar.update()
     else:
         f_dir_creator(v_path + f"/NE-{id_count} ({ip})")
         f_comand_outputs_to_files(command_set, ip, nedir, net_connect, v_dtype)
@@ -83,16 +84,15 @@ def f_send_commands_to_device(id_count: int, device, command_set, nedir, v_pbar)
         v_report[id_count]['status'] = 'Ok'
         v_report[id_count]['hostname'] = net_connect.find_prompt().strip('<>#')
         v_report[id_count]['device_type'] = v_dtype
+        v_pbar.update()
         net_connect.disconnect()
-    v_pbar.update()
 
 
 def f_device_caller(device_list, cons_comm, login, password):
     counter: int = 0
-
+    manager = enlighten.get_manager()
+    pbar = manager.counter(total=len(device_list), desc='Devices processed:', unit='NE', color='red')
     with ThreadPoolExecutor(max_workers=10) as executor:
-        manager = enlighten.get_manager()
-        pbar = manager.counter(total=len(device_list), desc='Devices processed:', unit='NE', color='white')
         for v_ne_ip in device_list:
             v_ne = f'NE-{counter}'
             v_nedir = v_path + '\\' + f'{v_ne} (' + v_ne_ip + ')'
