@@ -14,7 +14,8 @@ import pandas
 import time
 import random
 from tabulate import tabulate
-#  import tqdm
+# import tqdm
+import enlighten
 from netmiko import ssh_exception, ConnectHandler, SSHDetect
 from concurrent.futures import ThreadPoolExecutor
 import logging
@@ -51,13 +52,13 @@ def f_comand_outputs_to_files(comands_list, ne_ip, directory_name, net_connect, 
     for i in enumerate(c_list):
         v_filename: str = f"{directory_name}" + r"/(" + f"{ne_ip})_{i[1]}.log"
         with open(v_filename, 'w') as f_output:
-            logging.info(cmdsend_msg.format(datetime.datetime.now().time(), ne_ip, dev_type,i[1]))
+            logging.info(cmdsend_msg.format(datetime.datetime.now().time(), ne_ip, dev_type, i[1]))
             output = net_connect.send_command_timing(i[1], delay_factor=5)
             f_output.write(output)
             f_output.close()
 
 
-def f_send_commands_to_device(id_count: int, device, command_set, nedir):
+def f_send_commands_to_device(id_count: int, device, command_set, nedir, v_pbar):
     ip = device['ip']
     start_msg = '===> {} Connection: {}'
     received_msg = '<=== {} Received:   {}'
@@ -83,11 +84,15 @@ def f_send_commands_to_device(id_count: int, device, command_set, nedir):
         v_report[id_count]['hostname'] = net_connect.find_prompt().strip('<>#')
         v_report[id_count]['device_type'] = v_dtype
         net_connect.disconnect()
+    v_pbar.update()
 
 
 def f_device_caller(device_list, cons_comm, login, password):
     counter: int = 0
+
     with ThreadPoolExecutor(max_workers=10) as executor:
+        manager = enlighten.get_manager()
+        pbar = manager.counter(total=len(device_list), desc='Devices processed:', unit='NE', color='white')
         for v_ne_ip in device_list:
             v_ne = f'NE-{counter}'
             v_nedir = v_path + '\\' + f'{v_ne} (' + v_ne_ip + ')'
@@ -100,7 +105,7 @@ def f_device_caller(device_list, cons_comm, login, password):
             }
             v_report.append(v_ne_status.copy())
             v_report[counter]['ip'] = v_ne_ip
-            executor.submit(f_send_commands_to_device, counter, v_ne_ssh, cons_comm, v_nedir)
+            executor.submit(f_send_commands_to_device, counter, v_ne_ssh, cons_comm, v_nedir, pbar)
             counter += 1
 
 
@@ -112,10 +117,16 @@ if __name__ == '__main__':
         level=logging.INFO)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", "--network-elements-list", action="store", dest="n",
-                        help="Файл со списком сетевых элементов (NE)", default="ne_list.txt")
-    parser.add_argument("-c", "--command-list", action="store", dest="c",
-                        help="Файл со списком консольных команд для сетевых элементов (NE)", default="ne_commands.yml")
+    parser.add_argument("-n", "--network-elements-list",
+                        dest="n",
+                        action="store",
+                        help="The name of the file with the list of network elements (NE)",
+                        default="ne_list.txt")
+    parser.add_argument("-c", "--command-list",
+                        dest="c",
+                        action="store",
+                        help="The name of the file with the list of commands for network elements (NE)",
+                        default="ne_commands.yml")
     args = parser.parse_args()
     v_ip_list_file: str = args.n
     v_commands_file: str = args.c

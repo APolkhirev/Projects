@@ -66,15 +66,15 @@ def f_ip_list_checker(v_ip_list_file):
                 if f_checkip(v_readedip.rstrip())[0]:
                     v_nes = v_nes + (v_readedip.rstrip(),)
                 else:
-                    print(f"Ошибка в строке {v_counter} (IP {v_readedip.rstrip()}): {f_checkip(v_readedip)[1]}")
+                    print(f"Error in the file '{v_ip_list_file}', line {v_counter} (IP '{v_readedip.rstrip()}'): {f_checkip(v_readedip)[1]}")
                 v_readedip = v_ipreader.readline()
             v_list_len = len(v_nes)
             v_nes = sorted(tuple(set(v_nes)), key=ipaddress.IPv4Address)  # дедубликация и сортировка IP-адресов
             if v_list_len - len(v_nes) != 0:
-                print(f'В файле {v_ip_list_file} удалено дублирующихся IP-адресов:', v_list_len - len(v_nes))
+                print(f"Duplicate addresses were removed from the file '{v_ip_list_file}':", v_list_len - len(v_nes))
             return v_nes
     except FileNotFoundError:
-        print(f"Ошибка: файл ./{v_ip_list_file}, со списком IP-адресов не найден.")
+        print(f"Error: the file './{v_ip_list_file}' with the address list was not found.")
 
 
 if __name__ == '__main__':
