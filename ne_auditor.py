@@ -46,12 +46,12 @@ def f_dir_creator(dir_name):
 
 
 def f_comand_outputs_to_files(comands_list, ne_ip, directory_name, net_connect, dev_type):
-    cmdsend_msg = "---> {} Push:       {} / '{}'"
+    cmdsend_msg = "---> {} Push:       {}   / {}: {}"
     c_list = tuple(sorted(comands_list[dev_type]))
     for i in enumerate(c_list):
         v_filename: str = f"{directory_name}" + r"/(" + f"{ne_ip})_{i[1]}.log"
         with open(v_filename, 'w') as f_output:
-            logging.info(cmdsend_msg.format(datetime.datetime.now().time(), ne_ip, i[1]))
+            logging.info(cmdsend_msg.format(datetime.datetime.now().time(), ne_ip, dev_type,i[1]))
             output = net_connect.send_command_timing(i[1], delay_factor=5)
             f_output.write(output)
             f_output.close()
@@ -61,7 +61,7 @@ def f_send_commands_to_device(id_count: int, device, command_set, nedir):
     ip = device['ip']
     start_msg = '===> {} Connection: {}'
     received_msg = '<=== {} Received:   {}'
-    received_err_msg = '<~~~ {} Received:   {} / {}'
+    received_err_msg = '<~~~ {} Received:   {}   / {}'
     time.sleep(0.1 * random.randint(0, 3) + (id_count % 10)*0.33)
     logging.info(start_msg.format(datetime.datetime.now().time(), ip))
     try:

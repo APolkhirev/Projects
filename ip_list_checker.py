@@ -59,7 +59,6 @@ def f_ip_list_checker(v_ip_list_file):
     v_nes = ()  # определяем список NE
     v_counter = 0
     try:
-        """ Считывание IP-адресов из файла в кортеж """
         with open(v_ip_list_file, 'r') as v_ipreader:
             v_readedip: str = v_ipreader.readline()
             while v_readedip:
@@ -67,16 +66,15 @@ def f_ip_list_checker(v_ip_list_file):
                 if f_checkip(v_readedip.rstrip())[0]:
                     v_nes = v_nes + (v_readedip.rstrip(),)
                 else:
-                    print(f"Ошибка в строке {v_counter} (IP {v_readedip.rstrip()}): {f_checkip(v_readedip.rstrip())[1]}")
+                    print(f"Ошибка в строке {v_counter} (IP {v_readedip.rstrip()}): {f_checkip(v_readedip)[1]}")
                 v_readedip = v_ipreader.readline()
             v_list_len = len(v_nes)
             v_nes = sorted(tuple(set(v_nes)), key=ipaddress.IPv4Address)  # дедубликация и сортировка IP-адресов
             if v_list_len - len(v_nes) != 0:
-                print(f'В файле {v_ip_list_file} удалено дублей:', v_list_len - len(v_nes))
+                print(f'В файле {v_ip_list_file} удалено дублирующихся IP-адресов:', v_list_len - len(v_nes))
             return v_nes
     except FileNotFoundError:
-        print(f"Ошибка: файл ./{v_ip_list_file}, "
-              f"содержащий построчный список IP-адресов сетевых элементов, не найден.")
+        print(f"Ошибка: файл ./{v_ip_list_file}, со списком IP-адресов не найден.")
 
 
 if __name__ == '__main__':
