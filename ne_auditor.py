@@ -3,21 +3,23 @@ NE_auditor v0.7
 Скрипт для аудита сети.
 """
 
-import yaml
 import datetime
 import getpass
 import os
 import sys
 import shutil
 import argparse
-import pandas
 import time
 import random
-from tabulate import tabulate
-import enlighten
-from netmiko import ssh_exception, ConnectHandler, SSHDetect
-from concurrent.futures import ThreadPoolExecutor
 import logging
+from concurrent.futures import ThreadPoolExecutor
+
+import enlighten
+import pandas
+import yaml
+from netmiko import ssh_exception, ConnectHandler, SSHDetect
+from tabulate import tabulate
+
 from ip_list_checker import f_ip_list_checker
 
 
