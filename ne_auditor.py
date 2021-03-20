@@ -52,7 +52,7 @@ def f_comand_outputs_to_files(comands_list, ne_ip, directory_name, net_connect, 
     cmdsend_msg = "---> {} Push:       {}   / {}: {}"
     c_list = tuple(sorted(comands_list[dev_type]))
     for i in enumerate(c_list):
-        v_filename: str = f"{directory_name}" + r"/(" + f"{ne_ip})_{str(i[1]).replace('|', 'I')}.log"
+        v_filename: str = f"{directory_name}/({ne_ip})_{str(i[1]).replace('|', 'I')}.log"
         with open(v_filename, 'w') as f_output:
             logging.info(cmdsend_msg.format(datetime.datetime.now().time(), ne_ip, dev_type, i[1]))
             output = net_connect.send_command_timing(i[1], delay_factor=5)
@@ -98,7 +98,7 @@ def f_device_caller(device_list, cons_comm, login, password):
     with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_SESSIONS) as executor:
         for v_ne_ip in device_list:
             v_ne = f'NE-{counter}'
-            v_nedir = v_path + '\\' + f'{v_ne} (' + v_ne_ip + ')'
+            v_nedir = f"{v_path}/{v_ne} ({v_ne_ip})"
             v_ne_ssh = {
                 'device_type': 'autodetect',
                 'ip': v_ne_ip,
@@ -110,6 +110,7 @@ def f_device_caller(device_list, cons_comm, login, password):
             v_report[counter]['ip'] = v_ne_ip
             executor.submit(f_send_commands_to_device, counter, v_ne_ssh, cons_comm, v_nedir, pbar)
             counter += 1
+            pbar.close()
 
 
 if __name__ == '__main__':

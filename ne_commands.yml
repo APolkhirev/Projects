@@ -1,0 +1,27 @@
+cisco_asa:
+- show version
+- show running-config
+cisco_ios:
+- show version
+- show running-config
+cisco_nxos:
+- show version
+- show running-config
+cisco_xr:
+- show version
+- show running-config
+extreme_exos:
+- show configuration
+- show switch
+- show version
+fortinet:
+- show full-configuration
+- get system status
+juniper_junos:
+- show configuration
+- show configuration | display set
+- show version
+huawei:
+- display current-configuration
+- display version
+- display elabel
