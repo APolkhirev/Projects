@@ -1,5 +1,5 @@
 """
-Модуль для проверки списка IP-адресов.
+A module for checking the list of IP addresses.
 """
 
 import ipaddress
@@ -7,9 +7,9 @@ import ipaddress
 
 def f_check_ip(v_ip):
     """
-
-    Проверка валидности IP-адреса для назначения на интерфейсе. Скорипт проверяепт как формат, так и принадлежность
-    зарезервированным пулам адресов, которые не могут использоваться с этой целью.
+    Checking the IP address for the destination on the interface.
+    The script checks both the format and ownership of the reserved pool of addresses
+    that cannot be used for this purpose.
     """
     try:
         ipaddress.ip_address(v_ip)

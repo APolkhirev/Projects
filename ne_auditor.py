@@ -1,6 +1,5 @@
 """
 NE_auditor v0.7
-Скрипт для аудита сети.
 """
 
 import os
@@ -141,13 +140,13 @@ if __name__ == '__main__':
     v_ip_list_file: str = args.n
     v_commands_file: str = args.c
 
-    v_nes = f_ip_list_checker(v_ip_list_file)  # определяем список NE
+    v_nes = f_ip_list_checker(v_ip_list_file)
     v_ne_status = dict.fromkeys(['hostname', 'ip', 'device_type', 'status'])
     v_report = []
 
     v_path: str = './audit_result_' + str(datetime.date.today())
     f_dir_creator(v_path)
-    v_coms = f_commands_reader(v_commands_file)  # Считываем команды из файла в переменную
+    v_coms = f_commands_reader(v_commands_file)
 
     v_login = input("Login: ")
     v_pass: str = ''
