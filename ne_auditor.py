@@ -94,7 +94,10 @@ def f_send_commands_to_device(id_count: int, device, command_set, nedir, v_pbar)
 def f_device_caller(device_list, cons_comm, login, password):
     counter: int = 0
     manager = enlighten.get_manager()
-    pbar = manager.counter(total=len(device_list), desc='Devices processed:', unit='NE', color='red')
+    pbar = manager.counter(total=len(device_list),
+                           desc='Devices processed:',
+                           unit='NE',
+                           color='red')
     with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_SESSIONS) as executor:
         for v_ne_ip in device_list:
             v_ne = f'NE-{counter}'
