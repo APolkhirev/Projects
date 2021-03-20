@@ -6,12 +6,11 @@ import os
 import sys
 import time
 import shutil
+import random
 import getpass
+import logging
 import datetime
 import argparse
-
-import random
-import logging
 from concurrent.futures import ThreadPoolExecutor
 
 import yaml
@@ -67,7 +66,7 @@ def f_send_commands_to_device(id_count: int, device, command_set, nedir, v_pbar)
     start_msg = "===> {} Connection: {}"
     received_msg = "<=== {} Received:   {}"
     received_err_msg = "<~~~ {} Received:   {}   / {}"
-    time.sleep(0.1 * random.randint(0, 3) + (id_count % 10)*0.33)
+    time.sleep(0.1 * random.randint(0, 3) + (id_count % 10) * 0.33)
     logging.info(start_msg.format(datetime.datetime.now().time(), ip))
     try:
         guesser = SSHDetect(**device)
