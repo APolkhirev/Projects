@@ -25,7 +25,7 @@ MAX_CONCURRENT_SESSIONS = 10
 
 
 def f_commands_reader(commands_file):
-    commands_reader_err_msg = '{} The ./{} file in YAML format was not found.'
+    commands_reader_err_msg = "{} The ./{} file in YAML format was not found."
     try:
         with open(commands_file, 'r') as commreader:
             coms = yaml.safe_load(commreader)
@@ -36,7 +36,7 @@ def f_commands_reader(commands_file):
 
 
 def f_dir_creator(dir_name):
-    dir_creator_err_msg = '{} Failed to create a directory: {}'
+    dir_creator_err_msg = "{} Failed to create a directory: {}"
     try:
         shutil.rmtree(dir_name, ignore_errors=False, onerror=None)
     except OSError:
@@ -62,9 +62,9 @@ def f_comand_outputs_to_files(comands_list, ne_ip, directory_name, net_connect, 
 
 def f_send_commands_to_device(id_count: int, device, command_set, nedir, v_pbar):
     ip = device['ip']
-    start_msg = '===> {} Connection: {}'
-    received_msg = '<=== {} Received:   {}'
-    received_err_msg = '<~~~ {} Received:   {}   / {}'
+    start_msg = "===> {} Connection: {}"
+    received_msg = "<=== {} Received:   {}"
+    received_err_msg = "<~~~ {} Received:   {}   / {}"
     time.sleep(0.1 * random.randint(0, 3) + (id_count % 10)*0.33)
     logging.info(start_msg.format(datetime.datetime.now().time(), ip))
     try:
@@ -73,12 +73,12 @@ def f_send_commands_to_device(id_count: int, device, command_set, nedir, v_pbar)
         device['device_type'] = v_dtype
         net_connect = ConnectHandler(**device)
     except ssh_exception.NetmikoAuthenticationException:
-        v_report[id_count]['status'] = 'Auth. error'
-        logging.info(received_err_msg.format(datetime.datetime.now().time(), ip, 'Authentication error'))
+        v_report[id_count]['status'] = "Auth. error"
+        logging.info(received_err_msg.format(datetime.datetime.now().time(), ip, "Authentication error"))
         v_pbar.update()
     except ssh_exception:
-        v_report[id_count]['status'] = 'No SSH access'
-        logging.info(received_err_msg.format(datetime.datetime.now().time(), ip, 'SSH access error'))
+        v_report[id_count]['status'] = "No SSH access"
+        logging.info(received_err_msg.format(datetime.datetime.now().time(), ip, "SSH access error"))
         v_pbar.update()
     else:
         f_dir_creator(v_path + f"/NE-{id_count} ({ip})")
@@ -95,12 +95,12 @@ def f_device_caller(device_list, cons_comm, login, password):
     counter: int = 0
     manager = enlighten.get_manager()
     pbar = manager.counter(total=len(device_list),
-                           desc='Devices processed:',
+                           desc="Devices processed:",
                            unit='NE',
                            color='red')
     with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_SESSIONS) as executor:
         for v_ne_ip in device_list:
-            v_ne = f'NE-{counter}'
+            v_ne = f"NE-{counter}"
             v_nedir = f"{v_path}/{v_ne} ({v_ne_ip})"
             v_ne_ssh = {
                 'device_type': 'autodetect',
@@ -120,20 +120,20 @@ if __name__ == '__main__':
 
     logging.getLogger('paramiko').setLevel(logging.WARNING)
     logging.basicConfig(
-        format='%(threadName)s %(name)s %(levelname)s: %(message)s',
+        format="%(threadName)s %(name)s %(levelname)s: %(message)s",
         level=logging.INFO)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", "--network-elements-list",
-                        dest="n",
-                        action="store",
+    parser.add_argument('-n', '--network-elements-list',
+                        dest='n',
+                        action='store',
                         help="The name of the file with the list of network elements (NE)",
-                        default="ne_list.txt")
-    parser.add_argument("-c", "--command-list",
-                        dest="c",
-                        action="store",
+                        default='ne_list.txt')
+    parser.add_argument('-c', '--command-list',
+                        dest='c',
+                        action='store',
                         help="The name of the file with the list of commands for network elements (NE)",
-                        default="ne_commands.yml")
+                        default='ne_commands.yml')
     args = parser.parse_args()
     v_ip_list_file: str = args.n
     v_commands_file: str = args.c
@@ -162,4 +162,4 @@ if __name__ == '__main__':
     print(tabulate(df, headers='keys', tablefmt='rst'))
     df.to_csv(str(v_path) + r'\AuditReport.csv', index=False)
 
-    input('\nDone. Press ENTER to exit.')
+    input("\nDone. Press ENTER to exit.")
