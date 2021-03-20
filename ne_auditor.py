@@ -3,20 +3,21 @@ NE_auditor v0.7
 Скрипт для аудита сети.
 """
 
-import datetime
-import getpass
 import os
 import sys
-import shutil
-import argparse
 import time
+import shutil
+import getpass
+import datetime
+import argparse
+
 import random
 import logging
 from concurrent.futures import ThreadPoolExecutor
 
-import enlighten
-import pandas
 import yaml
+import pandas
+import enlighten
 from netmiko import ssh_exception, ConnectHandler, SSHDetect
 from tabulate import tabulate
 
