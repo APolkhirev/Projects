@@ -27,12 +27,12 @@ MAX_CONCURRENT_SESSIONS = 10
 def f_commands_reader(commands_file):
     commands_reader_err_msg = "{} The ./{} file in YAML format was not found."
     try:
-        with open(commands_file, 'r') as commreader:
-            coms = yaml.safe_load(commreader)
+        with open(commands_file, 'r') as command_reader:
+            commands = yaml.safe_load(command_reader)
     except FileNotFoundError:
         logging.info(commands_reader_err_msg.format(datetime.datetime.now().time(), v_commands_file))
         sys.exit(1)
-    return coms
+    return commands
 
 
 def f_dir_creator(dir_name):
@@ -48,13 +48,13 @@ def f_dir_creator(dir_name):
         logging.info(dir_creator_err_msg.format(datetime.datetime.now().time(), dir_name))
 
 
-def f_comand_outputs_to_files(comands_list, ne_ip, directory_name, net_connect, dev_type):
-    cmdsend_msg = "---> {} Push:       {}   / {}: {}"
-    c_list = tuple(sorted(comands_list[dev_type]))
+def f_command_outputs_to_files(commands_list, ne_ip, directory_name, net_connect, dev_type):
+    cmd_send_msg = "---> {} Push:       {}   / {}: {}"
+    c_list = tuple(sorted(commands_list[dev_type]))
     for i in enumerate(c_list):
         v_filename: str = f"{directory_name}/({ne_ip})_{str(i[1]).replace('|', 'I')}.log"
         with open(v_filename, 'w') as f_output:
-            logging.info(cmdsend_msg.format(datetime.datetime.now().time(), ne_ip, dev_type, i[1]))
+            logging.info(cmd_send_msg.format(datetime.datetime.now().time(), ne_ip, dev_type, i[1]))
             output = net_connect.send_command_timing(i[1], delay_factor=5)
             f_output.write(output)
             f_output.close()
@@ -82,7 +82,7 @@ def f_send_commands_to_device(id_count: int, device, command_set, nedir, v_pbar)
         v_pbar.update()
     else:
         f_dir_creator(v_path + f"/NE-{id_count} ({ip})")
-        f_comand_outputs_to_files(command_set, ip, nedir, net_connect, v_dtype)
+        f_command_outputs_to_files(command_set, ip, nedir, net_connect, v_dtype)
         logging.info(received_msg.format(datetime.datetime.now().time(), ip))
         v_report[id_count]['status'] = 'Ok'
         v_report[id_count]['hostname'] = net_connect.find_prompt().strip('<>#')

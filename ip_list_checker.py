@@ -5,7 +5,7 @@
 import ipaddress
 
 
-def f_checkip(v_ip):
+def f_check_ip(v_ip):
     """
 
     Проверка валидности IP-адреса для назначения на интерфейсе. Скорипт проверяепт как формат, так и принадлежность
@@ -56,19 +56,19 @@ def f_checkip(v_ip):
 
 
 def f_ip_list_checker(v_ip_list_file):
-    v_nes = ()  # определяем список NE
+    v_nes = ()
     v_counter = 0
     try:
-        with open(v_ip_list_file, 'r') as v_ipreader:
-            v_readedip: str = v_ipreader.readline()
-            while v_readedip:
+        with open(v_ip_list_file, 'r') as v_ip_reader:
+            v_ip: str = v_ip_reader.readline()
+            while v_ip:
                 v_counter += 1
-                if f_checkip(v_readedip.rstrip())[0]:
-                    v_nes = v_nes + (v_readedip.rstrip(),)
+                if f_check_ip(v_ip.rstrip())[0]:
+                    v_nes = v_nes + (v_ip.rstrip(),)
                 else:
                     print(f"Error in the file '{v_ip_list_file}', line {v_counter} "
-                          f"(IP '{v_readedip.rstrip()}'): {f_checkip(v_readedip)[1]}")
-                v_readedip = v_ipreader.readline()
+                          f"(IP '{v_ip.rstrip()}'): {f_check_ip(v_ip)[1]}")
+                v_ip = v_ip_reader.readline()
             v_list_len = len(v_nes)
             v_nes = sorted(tuple(set(v_nes)), key=ipaddress.IPv4Address)  # дедубликация и сортировка IP-адресов
             if v_list_len - len(v_nes) != 0:
