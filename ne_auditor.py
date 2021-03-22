@@ -2,20 +2,20 @@
 NE_auditor v0.7
 """
 
-import os
-import sys
-import time
-import shutil
-import random
+import argparse
+import datetime
 import getpass
 import logging
-import datetime
-import argparse
+import os
+import random
+import shutil
+import sys
+import time
 from concurrent.futures import ThreadPoolExecutor
 
-import yaml
-import pandas
 import enlighten
+import pandas
+import yaml
 from netmiko import ssh_exception, ConnectHandler, SSHDetect
 from tabulate import tabulate
 
