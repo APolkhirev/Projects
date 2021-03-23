@@ -13,7 +13,7 @@ options = {
 setup(
     name="ne_auditor",
     version="0.8",
-    description="Multivendor Auditor for Network Elements",
+    description="Simple Multivendor Auditor for Network Elements",
     executables=executables,
     options=options,
 )
