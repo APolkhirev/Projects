@@ -74,7 +74,7 @@ def f_command_outputs_to_files(
             f_output.close()
 
 
-def f_send_commands_to_device(id_count: int, device, command_set, nedir, v_pbar):
+def f_send_commands_to_device(id_count: int, device, command_set, nedir, v_pbar, ufo_type):
     ip = device["ip"]
     start_msg = "===> {} Connection: {}"
     received_msg = "<=== {} Received:   {}"
@@ -85,7 +85,15 @@ def f_send_commands_to_device(id_count: int, device, command_set, nedir, v_pbar)
     try:
         guesser = SSHDetect(**device)
         v_dtype = guesser.autodetect()
-        device["device_type"] = v_dtype
+        if v_dtype:
+            device["device_type"] = v_dtype
+        else:
+            if ufo_type == "":
+                device["device_type"] = "eltex"
+                v_dtype = "UFO"
+            else:
+                device["device_type"] = ufo_type
+                v_dtype = ufo_type
         net_connect = ConnectHandler(**device)
     except ssh_exception.NetmikoAuthenticationException:
         v_report[id_count]["status"] = "Auth. error"
@@ -114,7 +122,7 @@ def f_send_commands_to_device(id_count: int, device, command_set, nedir, v_pbar)
         net_connect.disconnect()
 
 
-def f_device_caller(device_list, cons_comm, login, password):
+def f_device_caller(device_list, cons_comm, login, password, ufo_type):
     counter: int = 0
     manager = enlighten.get_manager()
     pbar = manager.counter(
@@ -134,7 +142,7 @@ def f_device_caller(device_list, cons_comm, login, password):
             v_report.append(v_ne_status.copy())
             v_report[counter]["ip"] = v_ne_ip
             executor.submit(
-                f_send_commands_to_device, counter, v_ne_ssh, cons_comm, v_nedir, pbar
+                f_send_commands_to_device, counter, v_ne_ssh, cons_comm, v_nedir, pbar, ufo_type
             )
             counter += 1
             pbar.close()
@@ -164,9 +172,18 @@ if __name__ == "__main__":
         help="The name of the file with the list of commands for network elements (NE)",
         default="ne_commands.yml",
     )
+    parser.add_argument(
+        "-u",
+        "--ufo-device",
+        dest="u",
+        action="store",
+        help="The unknown NE type",
+        default="",
+    )
     args = parser.parse_args()
     v_ip_list_file: str = args.n
     v_commands_file: str = args.c
+    v_ufo_type: str = args.u
 
     v_nes = f_ip_list_checker(v_ip_list_file)
     v_ne_status = dict.fromkeys(["hostname", "ip", "device_type", "status"])
@@ -185,7 +202,7 @@ if __name__ == "__main__":
     except Exception as err:
         print("Error: ", err)
 
-    f_device_caller(v_nes, v_coms, v_login, v_pass)
+    f_device_caller(v_nes, v_coms, v_login, v_pass, v_ufo_type)
     print("Stop.\n")
 
     df = pandas.DataFrame(v_report)

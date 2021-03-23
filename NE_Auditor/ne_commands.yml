@@ -25,3 +25,6 @@ huawei:
 - display current-configuration
 - display version
 - display elabel
+UFO:
+- show version
+- show running-config
