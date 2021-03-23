@@ -1,5 +1,6 @@
 """
 A module for checking the list of IP addresses.
+v0.2
 """
 
 import ipaddress
