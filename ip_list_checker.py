@@ -3,6 +3,7 @@ A module for checking the list of IP addresses.
 """
 
 import ipaddress
+import logging
 
 
 def f_check_ip(v_ip):
@@ -18,15 +19,15 @@ def f_check_ip(v_ip):
     if ipaddress.IPv4Address(v_ip).is_link_local:
         return (
             False,
-            """Bad IP: Used for link-local addresses between two hosts on a single link when no IP 
-        address is otherwise specified, such as would have normally been retrieved from a DHCP server.""",
+            "Bad IP: Used for link-local addresses between two hosts on a single link when no IP "
+            "address is otherwise specified, such as would have normally been retrieved from a DHCP server.",
         )
     elif ipaddress.IPv4Address(v_ip).is_loopback:
         return False, "Bad IP: Used for loopback addresses to the local host."
     elif ipaddress.ip_address(v_ip) == ipaddress.ip_address("255.255.255.255"):
         return (
             False,
-            """Bad IP: Reserved for the "limited broadcast" destination address.""",
+            "Bad IP: Reserved for the limited broadcast destination address.",
         )
     elif ipaddress.IPv4Address(v_ip).is_multicast:
         return False, "Bad IP: In use for IP multicast."
@@ -53,8 +54,8 @@ def f_check_ip(v_ip):
     ):
         return (
             False,
-            """Bad IP: Shared address space for communications between a service provider and its 
-        subscribers when using a carrier-grade NAT.""",
+            "Bad IP: Shared address space for communications between a service provider and "
+            "its subscribers when using a carrier-grade NAT.",
         )
     elif (
         ipaddress.ip_address("192.0.0.0")
@@ -99,8 +100,8 @@ def f_check_ip(v_ip):
     ):
         return (
             False,
-            """Bad IP: Used for benchmark testing of inter-network communications
-        between two separate subnets.""",
+            "Bad IP: Used for benchmark testing of inter-network communications "
+            "between two separate subnets.",
         )
     elif (
         ipaddress.ip_address("198.51.100.0")
@@ -120,6 +121,11 @@ def f_check_ip(v_ip):
 def f_ip_list_checker(v_ip_list_file):
     v_nes = ()
     v_counter = 0
+    ipaddress_file_err_msg = (
+        "Error: The file './{}' with the IP-address list was not found."
+    )
+    ipaddress_format_err_msg = "Error: In the file '{}', line {} (IP '{}'): {}"
+    ipaddress_list_len_msg = "Duplicate addresses were removed from the file '{}': {}"
 
     try:
         with open(v_ip_list_file, "r") as v_ip_reader:
@@ -129,24 +135,27 @@ def f_ip_list_checker(v_ip_list_file):
                 if f_check_ip(v_ip.rstrip())[0]:
                     v_nes = v_nes + (v_ip.rstrip(),)
                 else:
-                    print(
-                        f"Error in the file '{v_ip_list_file}', line {v_counter} "
-                        f"(IP '{v_ip.rstrip()}'): {f_check_ip(v_ip)[1]}"
+                    logging.info(
+                        ipaddress_format_err_msg.format(
+                            v_ip_list_file,
+                            v_counter,
+                            v_ip.rstrip(),
+                            f_check_ip(v_ip.rstrip())[1],
+                        )
                     )
                 v_ip = v_ip_reader.readline()
             v_list_len = len(v_nes)
             v_nes = sorted(tuple(set(v_nes)), key=ipaddress.IPv4Address)
 
             if v_list_len - len(v_nes) != 0:
-                print(
-                    f"Duplicate addresses were removed from the file '{v_ip_list_file}':",
-                    v_list_len - len(v_nes),
+                logging.info(
+                    ipaddress_list_len_msg.format(
+                        v_ip_list_file, v_list_len - len(v_nes)
+                    )
                 )
             return v_nes
     except FileNotFoundError:
-        print(
-            f"Error: the file './{v_ip_list_file}' with the IP-address list was not found."
-        )
+        logging.info(ipaddress_file_err_msg.format(v_ip_list_file))
 
 
 if __name__ == "__main__":

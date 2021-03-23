@@ -26,17 +26,13 @@ MAX_CONCURRENT_SESSIONS = 10
 
 
 def f_commands_reader(commands_file):
-    commands_reader_err_msg = "{} The ./{} file in YAML format was not found."
+    commands_reader_err_msg = "Error: The file './{}' in YAML format was not found."
 
     try:
         with open(commands_file, "r") as command_reader:
             commands = yaml.safe_load(command_reader)
     except FileNotFoundError:
-        logging.info(
-            commands_reader_err_msg.format(
-                datetime.datetime.now().time(), v_commands_file
-            )
-        )
+        logging.info(commands_reader_err_msg.format(v_commands_file))
         sys.exit(1)
     return commands
 
