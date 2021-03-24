@@ -23,6 +23,7 @@ from ip_list_checker import f_ip_list_checker
 
 
 MAX_CONCURRENT_SESSIONS = 10
+DEFAULT_UFO_DEVICE_TYPE = "eltex"
 
 
 def f_commands_reader(commands_file):
@@ -91,7 +92,7 @@ def f_send_commands_to_device(
             device["device_type"] = v_dtype
         else:
             if ufo_type == "":
-                device["device_type"] = "eltex"
+                device["device_type"] = DEFAULT_UFO_DEVICE_TYPE
                 v_dtype = "UFO"
             else:
                 device["device_type"] = ufo_type
