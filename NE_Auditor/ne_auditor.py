@@ -74,7 +74,9 @@ def f_command_outputs_to_files(
             f_output.close()
 
 
-def f_send_commands_to_device(id_count: int, device, command_set, nedir, v_pbar, ufo_type):
+def f_send_commands_to_device(
+    id_count: int, device, command_set, nedir, v_pbar, ufo_type
+):
     ip = device["ip"]
     start_msg = "===> {} Connection: {}"
     received_msg = "<=== {} Received:   {}"
@@ -142,7 +144,13 @@ def f_device_caller(device_list, cons_comm, login, password, ufo_type):
             v_report.append(v_ne_status.copy())
             v_report[counter]["ip"] = v_ne_ip
             executor.submit(
-                f_send_commands_to_device, counter, v_ne_ssh, cons_comm, v_nedir, pbar, ufo_type
+                f_send_commands_to_device,
+                counter,
+                v_ne_ssh,
+                cons_comm,
+                v_nedir,
+                pbar,
+                ufo_type,
             )
             counter += 1
             pbar.close()
