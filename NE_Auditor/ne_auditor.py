@@ -54,30 +54,24 @@ def f_dir_creator(dir_name):
         )
 
 
-def f_command_outputs_to_files(
-    commands_list, ne_ip, directory_name, net_connect, dev_type
-):
-    cmd_send_msg = "---> {} Push:       {}   / {}: {}"
-    c_list = tuple(sorted(commands_list[dev_type]))
-
-    for i in enumerate(c_list):
-        v_filename: str = (
-            f"{directory_name}/({ne_ip})_{str(i[1]).replace('|', 'I')}.log"
-        )
-        with open(v_filename, "w") as f_output:
-            logging.info(
-                cmd_send_msg.format(
-                    datetime.datetime.now().time(), ne_ip, dev_type, i[1]
-                )
-            )
-            output = net_connect.send_command_timing(i[1], delay_factor=5)
-            f_output.write(output)
-            f_output.close()
-
-
 def f_send_commands_to_device(
     id_count: int, device, command_set, nedir, v_pbar, ufo_type
 ):
+    def f_command_outputs_to_files():
+        cmd_send_msg = "---> {} Push:       {}   / {}: {}"
+        c_list = tuple(sorted(command_set[v_dtype]))
+        for i in enumerate(c_list):
+            v_filename: str = f"{nedir}/({ip})_{str(i[1]).replace('|', 'I')}.log"
+            with open(v_filename, "w") as f_output:
+                logging.info(
+                    cmd_send_msg.format(
+                        datetime.datetime.now().time(), ip, v_dtype, i[1]
+                    )
+                )
+                output = net_connect.send_command_timing(i[1], delay_factor=5)
+                f_output.write(output)
+                f_output.close()
+
     ip = device["ip"]
     start_msg = "===> {} Connection: {}"
     received_msg = "<=== {} Received:   {}"
@@ -116,7 +110,7 @@ def f_send_commands_to_device(
         v_pbar.update()
     else:
         f_dir_creator(v_path + f"/NE-{id_count} ({ip})")
-        f_command_outputs_to_files(command_set, ip, nedir, net_connect, v_dtype)
+        f_command_outputs_to_files()
         logging.info(received_msg.format(datetime.datetime.now().time(), ip))
         v_report[id_count]["status"] = "Ok"
         v_report[id_count]["hostname"] = net_connect.find_prompt().strip("<>#")
