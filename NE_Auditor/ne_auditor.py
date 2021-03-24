@@ -191,7 +191,8 @@ if __name__ == "__main__":
 
     logging.getLogger("paramiko").setLevel(logging.WARNING)
     logging.basicConfig(
-        format="%(threadName)s %(name)s %(levelname)s: %(message)s", level=logging.WARNING
+        format="%(threadName)s %(name)s %(levelname)s: %(message)s",
+        level=logging.WARNING,
     )
 
     v_nes = f_ip_list_checker(v_ip_list_file)

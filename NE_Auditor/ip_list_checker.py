@@ -122,9 +122,7 @@ def f_check_ip(v_ip):
 def f_ip_list_checker(v_ip_list_file):
     v_nes = ()
     v_counter = 0
-    ipaddress_file_err_msg = (
-        "The file './{}' with the IP-address list was not found."
-    )
+    ipaddress_file_err_msg = "The file './{}' with the IP-address list was not found."
     ipaddress_format_err_msg = "In the file '{}', line {} (IP '{}'): {}"
     ipaddress_list_len_msg = "Duplicate addresses were removed from the file '{}': {}"
 
