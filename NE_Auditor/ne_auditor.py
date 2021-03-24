@@ -27,13 +27,13 @@ DEFAULT_UFO_DEVICE_TYPE = "eltex"
 
 
 def f_commands_reader(commands_file):
-    commands_reader_err_msg = "Error: The file './{}' in YAML format was not found."
+    commands_reader_err_msg = "The file './{}' in YAML format was not found."
 
     try:
         with open(commands_file, "r") as command_reader:
             commands = yaml.safe_load(command_reader)
     except FileNotFoundError:
-        logging.info(commands_reader_err_msg.format(v_commands_file))
+        logging.error(commands_reader_err_msg.format(v_commands_file))
         sys.exit(1)
     return commands
 
@@ -49,7 +49,7 @@ def f_dir_creator(dir_name):
     try:
         os.mkdir(dir_name)
     except OSError:
-        logging.info(
+        logging.warning(
             dir_creator_err_msg.format(datetime.datetime.now().time(), dir_name)
         )
 
@@ -159,11 +159,6 @@ def f_device_caller(device_list, cons_comm, login, password, ufo_type):
 
 if __name__ == "__main__":
 
-    logging.getLogger("paramiko").setLevel(logging.WARNING)
-    logging.basicConfig(
-        format="%(threadName)s %(name)s %(levelname)s: %(message)s", level=logging.INFO
-    )
-
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-n",
@@ -193,6 +188,11 @@ if __name__ == "__main__":
     v_ip_list_file: str = args.n
     v_commands_file: str = args.c
     v_ufo_type: str = args.u
+
+    logging.getLogger("paramiko").setLevel(logging.WARNING)
+    logging.basicConfig(
+        format="%(threadName)s %(name)s %(levelname)s: %(message)s", level=logging.WARNING
+    )
 
     v_nes = f_ip_list_checker(v_ip_list_file)
     v_ne_status = dict.fromkeys(["hostname", "ip", "device_type", "status"])

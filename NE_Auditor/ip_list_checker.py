@@ -123,9 +123,9 @@ def f_ip_list_checker(v_ip_list_file):
     v_nes = ()
     v_counter = 0
     ipaddress_file_err_msg = (
-        "Error: The file './{}' with the IP-address list was not found."
+        "The file './{}' with the IP-address list was not found."
     )
-    ipaddress_format_err_msg = "Error: In the file '{}', line {} (IP '{}'): {}"
+    ipaddress_format_err_msg = "In the file '{}', line {} (IP '{}'): {}"
     ipaddress_list_len_msg = "Duplicate addresses were removed from the file '{}': {}"
 
     try:
@@ -136,7 +136,7 @@ def f_ip_list_checker(v_ip_list_file):
                 if f_check_ip(v_ip.rstrip())[0]:
                     v_nes = v_nes + (v_ip.rstrip(),)
                 else:
-                    logging.info(
+                    logging.warning(
                         ipaddress_format_err_msg.format(
                             v_ip_list_file,
                             v_counter,
@@ -156,7 +156,7 @@ def f_ip_list_checker(v_ip_list_file):
                 )
             return v_nes
     except FileNotFoundError:
-        logging.info(ipaddress_file_err_msg.format(v_ip_list_file))
+        logging.error(ipaddress_file_err_msg.format(v_ip_list_file))
 
 
 if __name__ == "__main__":
