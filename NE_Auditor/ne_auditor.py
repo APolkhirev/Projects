@@ -223,7 +223,7 @@ if __name__ == "__main__":
         except Exception as err:
             print("Error: ", err)
 
-    logging.getLogger("paramiko").setLevel(logging.WARNING)
+    logging.getLogger("paramiko").setLevel(logging.INFO)
     logging.basicConfig(
         format="%(threadName)s %(name)s %(levelname)s: %(message)s",
         level=logging.INFO,
