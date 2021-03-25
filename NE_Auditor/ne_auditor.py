@@ -27,6 +27,7 @@ DEFAULT_UFO_DEVICE_TYPE = "eltex"
 
 
 def f_commands_reader(commands_file):
+    """ Считываение команд из YAML-файла в список """
     commands_reader_err_msg = "The file './{}' in YAML format was not found."
 
     try:
@@ -39,6 +40,7 @@ def f_commands_reader(commands_file):
 
 
 def f_dir_creator(dir_name):
+    """ Безопасное создание дирректории """
     dir_creator_err_msg = "{} Failed to create a directory: {}"
 
     try:
@@ -57,7 +59,13 @@ def f_dir_creator(dir_name):
 def f_send_commands_to_device(
     id_count: int, device, command_set, nedir, v_pbar, ufo_type
 ):
+    """
+    Определение типа устройства, выбор для устройства перечня специфичных комманд
+    и вызов вложенной функции ввода команд
+    """
+
     def f_command_outputs_to_files():
+        """ Применение списка команд на устройство и запись результатов в файл """
         cmd_send_msg = "---> {} Push:       {}   / {}: {}"
         c_list = tuple(sorted(command_set[v_dtype]))
         for i in enumerate(c_list):
@@ -76,10 +84,13 @@ def f_send_commands_to_device(
     start_msg = "===> {} Connection: {}"
     received_msg = "<=== {} Received:   {}"
     received_err_msg = "<~~~ {} Received:   {}   / {}"
-    time.sleep(0.1 * random.randint(0, 3) + (id_count % 10) * 0.33)
+    time.sleep(
+        0.1 * random.randint(0, 3) + (id_count % 10) * 0.33
+    )  # распределение группы сессий по небольшому интервалу времени
     logging.info(start_msg.format(datetime.datetime.now().time(), ip))
 
     try:
+        """ Определение типа устройства """
         guesser = SSHDetect(**device)
         v_dtype = guesser.autodetect()
         if v_dtype:
@@ -110,7 +121,7 @@ def f_send_commands_to_device(
         v_pbar.update()
     else:
         f_dir_creator(v_path + f"/NE-{id_count} ({ip})")
-        f_command_outputs_to_files()
+        f_command_outputs_to_files()  # отправляем команды на устройство, считываем в соответствующие файлы
         logging.info(received_msg.format(datetime.datetime.now().time(), ip))
         v_report[id_count]["status"] = "Ok"
         v_report[id_count]["hostname"] = net_connect.find_prompt().strip("<>#")
@@ -120,6 +131,7 @@ def f_send_commands_to_device(
 
 
 def f_device_caller(device_list, cons_comm, login, password, ufo_type):
+    """Функция многопоточного опроса устройств из списка устройств"""
     counter: int = 0
     manager = enlighten.get_manager()
     pbar = manager.counter(
@@ -138,6 +150,7 @@ def f_device_caller(device_list, cons_comm, login, password, ufo_type):
             }
             v_report.append(v_ne_status.copy())
             v_report[counter]["ip"] = v_ne_ip
+            # Отправка списка команд на устройство:
             executor.submit(
                 f_send_commands_to_device,
                 counter,
@@ -171,6 +184,22 @@ if __name__ == "__main__":
         default="ne_commands.yml",
     )
     parser.add_argument(
+        "-l",
+        "--login",
+        dest="l",
+        action="store",
+        help="Login name",
+        default="",
+    )
+    parser.add_argument(
+        "-p",
+        "--password",
+        dest="p",
+        action="store",
+        help="Login password",
+        default="",
+    )
+    parser.add_argument(
         "-u",
         "--ufo-device",
         dest="u",
@@ -182,6 +211,17 @@ if __name__ == "__main__":
     v_ip_list_file: str = args.n
     v_commands_file: str = args.c
     v_ufo_type: str = args.u
+    v_pass: str = args.p
+    v_login: str = args.l
+    if not v_login:
+        v_login = input("Login: ")
+
+    if not v_pass:
+        try:
+            v_pass = getpass.getpass("Password: ")
+            print("\nStart:")
+        except Exception as err:
+            print("Error: ", err)
 
     logging.getLogger("paramiko").setLevel(logging.WARNING)
     logging.basicConfig(
@@ -196,15 +236,6 @@ if __name__ == "__main__":
     v_path: str = "./audit_result_" + str(datetime.date.today())
     f_dir_creator(v_path)
     v_coms = f_commands_reader(v_commands_file)
-
-    v_login = input("Login: ")
-    v_pass: str = ""
-
-    try:
-        v_pass = getpass.getpass("Password: ")
-        print("\nStart:")
-    except Exception as err:
-        print("Error: ", err)
 
     f_device_caller(v_nes, v_coms, v_login, v_pass, v_ufo_type)
     print("Stop.\n")
