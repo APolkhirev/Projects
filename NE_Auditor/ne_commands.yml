@@ -25,6 +25,9 @@ huawei:
 - display current-configuration
 - display version
 - display elabel
+mikrotik_routeros:
+- export verbose
+- export compact
 UFO:
-- show version
-- show running-config
+- export verbose
+- export compact
