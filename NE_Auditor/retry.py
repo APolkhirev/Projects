@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 def retry(
     exceptions: Union[Type[Exception], Tuple[Type[Exception], ...]],
-    max_retries: int = 5,
+    max_retries: int = 3,
     delay: int = 3,
     delay_multiplier: int = 2,
     exc_retry_condition: Optional[Callable[[Exception], bool]] = None,
@@ -60,7 +60,6 @@ def retry(
                         mdelay,
                         traceback.format_exc(limit=1),
                     )
-                    print('*'*15, attempt_num, '*'*15)
                     time.sleep(mdelay)
                     mdelay *= delay_multiplier
             return f(*args, **kwargs)

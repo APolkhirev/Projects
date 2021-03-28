@@ -23,7 +23,7 @@ from ip_list_checker import f_ip_list_checker
 
 
 MAX_CONCURRENT_SESSIONS = 10
-DEFAULT_UFO_DEVICE_TYPE = "extreme"
+DEFAULT_UFO_DEVICE_TYPE = "extreme_exos"
 
 
 def f_commands_reader(commands_file):
@@ -228,6 +228,14 @@ if __name__ == "__main__":
         format="%(threadName)s %(name)s %(levelname)s: %(message)s",
         level=logging.INFO,
     )
+
+    dev_param = {
+        "device_type": "huawei",
+        "ip": "10.158.149.10",
+        "username": "auditor",
+        "password": "1qaz@WS",
+        "conn_timeout": 15,
+    }
 
     v_nes = f_ip_list_checker(v_ip_list_file)
     v_ne_status = dict.fromkeys(["hostname", "ip", "device_type", "status"])
