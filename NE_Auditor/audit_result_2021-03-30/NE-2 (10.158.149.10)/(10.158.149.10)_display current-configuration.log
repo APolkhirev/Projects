@@ -1,0 +1,109 @@
+!Software Version V200R005C00SPC500
+#
+sysname R1.2-S5700-28C-EI.LAB
+#
+vlan batch 2
+#
+telnet server enable
+#
+undo http server enable
+undo http secure-server enable
+#
+vlan 2
+ name CONNECT_TO_LAB-LAN
+#
+aaa
+ authentication-scheme default
+ authorization-scheme default
+ accounting-scheme default
+ domain default
+ domain default_admin
+ local-user admin password irreversible-cipher %@%@B~Lj:|B3EO<[^l/L%joR#UtKiJHn26kru!0>~gTTWrg=UtN#%@%@
+ local-user admin service-type http
+ local-user auditor password irreversible-cipher %@%@-L/W@E4P/ETcj/F*&UdAf*fBF8u1V_AabGC7c52:2xp4*fEf%@%@
+ local-user auditor privilege level 15
+ local-user auditor service-type telnet terminal ssh
+#
+interface Vlanif1
+ ip address 172.16.1.2 255.255.255.0
+#
+interface Vlanif2
+ ip address 10.158.149.10 255.255.0.0
+#
+interface MEth0/0/1
+#
+interface GigabitEthernet0/0/1
+ shutdown
+#
+interface GigabitEthernet0/0/2
+#
+interface GigabitEthernet0/0/3
+#
+interface GigabitEthernet0/0/4
+#
+interface GigabitEthernet0/0/5
+#
+interface GigabitEthernet0/0/6
+#
+interface GigabitEthernet0/0/7
+#
+interface GigabitEthernet0/0/8
+#
+interface GigabitEthernet0/0/9
+#
+interface GigabitEthernet0/0/10
+#
+interface GigabitEthernet0/0/11
+ stp edged-port enable
+#
+interface GigabitEthernet0/0/12
+ port link-type trunk
+#
+interface GigabitEthernet0/0/13
+#
+interface GigabitEthernet0/0/14
+#
+interface GigabitEthernet0/0/15
+#
+interface GigabitEthernet0/0/16
+#
+interface GigabitEthernet0/0/17
+#
+interface GigabitEthernet0/0/18
+#
+interface GigabitEthernet0/0/19
+#
+interface GigabitEthernet0/0/20
+#
+interface GigabitEthernet0/0/21
+#
+interface GigabitEthernet0/0/22
+#
+interface GigabitEthernet0/0/23
+#
+interface GigabitEthernet0/0/24
+ port default vlan 2
+ stp disable
+#
+interface XGigabitEthernet0/1/1
+#
+interface XGigabitEthernet0/1/2
+#
+interface NULL0
+#
+ip route-static 0.0.0.0 0.0.0.0 10.158.0.1
+#
+stelnet server enable
+ssh user auditor
+ssh user auditor authentication-type password
+ssh user auditor service-type all
+#
+user-interface con 0
+ authentication-mode password
+ set authentication password cipher $1a$B0b4Ylu452$}yU%J&qoH8a(]<%F>1OSMSLK*}:FsJk1/\J.I^n=$
+user-interface vty 0 4
+ authentication-mode aaa
+ protocol inbound all
+user-interface vty 16 20
+#
+return

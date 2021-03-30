@@ -1,0 +1,130 @@
+/$[System Integration Version]
+/$SystemIntegrationVersion=3.0
+
+
+[Slot_0]
+/$[Board Integration Version]
+/$BoardIntegrationVersion=3.0
+
+
+[Main_Board]
+
+/$[ArchivesInfo Version]
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=ES5Z128CM0
+BarCode=21023523386TC5001406
+Item=02352338
+Description=Quidway S5700-28C-EI,ES5Z128CM0,S5700-28C-EI Mainframe(24 10/100/1000Base-T,Chassis,Dual Slots of power,Without Flexible Card and Power Module)
+Manufactured=2012-5-29
+VendorName=Huawei
+IssueNumber=00
+CLEICode=
+BOM=
+
+
+
+
+
+/$[ArchivesInfo Version]
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=ES510X2S
+BarCode=020XEV10C7000098
+Item=03020XEV
+Description=S5700,ES510X2S,2-Port 10GE SFP+ Optical Interface Card,2*1
+Manufactured=2012-07-14
+VendorName=Huawei
+IssueNumber=00
+CLEICode=
+BOM=
+
+
+
+
+[Port_1]
+/$[ArchivesInfo Version]
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=
+BarCode=
+Item=
+Description=
+Manufactured=
+/$VendorName=
+IssueNumber=
+CLEICode=
+BOM=
+
+
+[Port_2]
+/$[ArchivesInfo Version]
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=
+BarCode=
+Item=
+Description=
+Manufactured=
+/$VendorName=
+IssueNumber=
+CLEICode=
+BOM=
+
+
+/$[ArchivesInfo Version]
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=CX7E1FANA
+BarCode=2102351651P0C5002125
+Item=02351651
+Description=S23&33&53&CX200D,CX7E1FANA,Fan Assembly
+Manufactured=2012-05-16
+VendorName=Huawei
+IssueNumber=00
+CLEICode=
+BOM=
+
+
+
+/$[ArchivesInfo Version]
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=CX7M1PWA
+BarCode=2102316783P0C7000118
+Item=02316783
+Description=S5300C,CX7M1PWA,AC Power Module
+Manufactured=2012-07-03
+VendorName=Huawei
+IssueNumber=00
+CLEICode=
+BOM=
+
+
+
+/$[ArchivesInfo Version]
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=CX7M1PWA
+BarCode=2102316783P0C7000235
+Item=02316783
+Description=S5300C,CX7M1PWA,AC Power Module
+Manufactured=2012-07-04
+VendorName=Huawei
+IssueNumber=00
+CLEICode=
+BOM=

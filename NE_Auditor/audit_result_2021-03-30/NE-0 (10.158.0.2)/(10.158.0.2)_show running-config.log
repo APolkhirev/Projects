@@ -1,0 +1,583 @@
+Building configuration...
+
+Current configuration : 15093 bytes
+!
+version 12.2
+no service pad
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log uptime
+no service password-encryption
+service unsupported-transceiver
+!
+hostname R1.2-SW-BNS.LAB
+!
+boot-start-marker
+boot-end-marker
+!
+logging buffered 16384 informational
+logging console informational
+!
+username cisco privilege 15 secret 5 $1$IAh7$yDZDxLygoOB/N6C3dQQB//
+username a.dyachkov secret 5 $1$UdeO$CnaV3fffHcR6M3iTSn6ad1
+username auditor privilege 15 secret 5 $1$TO8B$9.o28ZTG8QWKji0UB5R2C1
+!
+!
+no aaa new-model
+clock timezone MSK 3
+system mtu routing 1500
+vtp domain lab
+vtp mode transparent
+ip domain-name BNS.lab
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-2865326592
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2865326592
+ revocation-check none
+ rsakeypair TP-self-signed-2865326592
+!
+!
+crypto pki certificate chain TP-self-signed-2865326592
+ certificate self-signed 01
+  3082024F 308201B8 A0030201 02020101 300D0609 2A864886 F70D0101 04050030 
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 32383635 33323635 3932301E 170D3933 30333031 30303030 
+  35355A17 0D323030 31303130 30303030 305A3031 312F302D 06035504 03132649 
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D32 38363533 
+  32363539 3230819F 300D0609 2A864886 F70D0101 01050003 818D0030 81890281 
+  8100BCE3 DB82189B CEA1B85F 039FAACE E8F523F8 8F36395A 66B2D6C1 8F41C6F5 
+  ADBB5F9B 33A51DE9 E2F0957E C7C50099 31B10B7C 00F81013 F0642EE2 3BFBD71C 
+  4BA4BBFB B2A64955 D094E6C9 51275137 8EFA7A95 5ED3C866 DA8A4141 1560E28D 
+  D74F40DC 8D8B8C0C 49796C38 323BAD5A C38A91D4 E1307A09 BA843FDA 8429F300 
+  3D5B0203 010001A3 77307530 0F060355 1D130101 FF040530 030101FF 30220603 
+  551D1104 1B301982 1752312E 322D5357 2D424E53 2E4C4142 2E424E53 2E6C6162 
+  301F0603 551D2304 18301680 14D8E4F3 898A67DF 9FB8D421 8808CB39 35A47B31 
+  95301D06 03551D0E 04160414 D8E4F389 8A67DF9F B8D42188 08CB3935 A47B3195 
+  300D0609 2A864886 F70D0101 04050003 81810044 118E0A5E 5323F12D B9CD365C 
+  1EAC2C68 12122F90 17C73A9E 33920234 40DC620E 84F90F25 319A665E 1CB42170 
+  D876F5E0 6DC385D4 11518101 405D22CC B3BF4E62 54F5AF94 94E9B152 FD49C431 
+  CA8BDE41 41EF7C09 01453906 07D14F08 F4CE55F1 44026521 2E4DFB2E B9B59820 
+  A5904D1D 2EE44196 71498015 91544AD2 F87F62
+  quit
+!
+!
+!
+errdisable recovery cause udld
+errdisable recovery cause bpduguard
+errdisable recovery cause security-violation
+errdisable recovery cause channel-misconfig (STP)
+errdisable recovery cause pagp-flap
+errdisable recovery cause dtp-flap
+errdisable recovery cause link-flap
+errdisable recovery cause sfp-config-mismatch
+errdisable recovery cause gbic-invalid
+errdisable recovery cause l2ptguard
+errdisable recovery cause psecure-violation
+errdisable recovery cause port-mode-failure
+errdisable recovery cause dhcp-rate-limit
+errdisable recovery cause mac-limit
+errdisable recovery cause vmps
+errdisable recovery cause storm-control
+errdisable recovery cause inline-power
+errdisable recovery cause arp-inspection
+errdisable recovery cause loopback
+errdisable recovery cause small-frame
+errdisable recovery interval 60
+!
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+spanning-tree vlan 1-4094 priority 24576
+!
+vlan internal allocation policy ascending
+!
+vlan 3970
+ name BNS-Test_0
+!
+vlan 3971
+ name BNS-Test_1
+!
+vlan 3972
+ name BNS-Test_2
+!
+vlan 3973
+ name BNS-Test_3
+!
+vlan 3974
+ name BNS-Test_4
+!
+vlan 3975
+ name BNS-Test_5
+!
+vlan 3976
+ name BNS-Test_6
+!
+vlan 3977
+ name BNS-Test_7
+!
+vlan 3978
+ name BNS-Test_8
+!
+vlan 3979
+ name BNS-Test_9
+!
+vlan 3983
+ name UCD
+!
+vlan 3984
+ name BNS
+lldp run
+!
+ip ssh version 2
+!
+!
+!
+interface FastEthernet0/1
+ description "Access port"
+ switchport access vlan 3984
+ switchport trunk encapsulation dot1q
+ switchport trunk allowed vlan 3984
+ switchport mode trunk
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/2
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/3
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/4
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/5
+ description "Access port"
+ switchport access vlan 3984
+ switchport trunk encapsulation dot1q
+ switchport trunk allowed vlan 3983,3984
+ switchport mode trunk
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/6
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/7
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/8
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/9
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/10
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/11
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/12
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/13
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/14
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/15
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/16
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/17
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/18
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/19
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/20
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/21
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/22
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/23
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/24
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/25
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/26
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/27
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/28
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/29
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/30
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/31
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/32
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/33
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/34
+ description "Access port"
+ location civic-location-id none
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/35
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/36
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/37
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/38
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/39
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/40
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/41
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/42
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/43
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/44
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/45
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/46
+ description "Access port"
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/47
+ description "Access port"
+ location civic-location-id none
+ switchport access vlan 3984
+ switchport mode access
+ storm-control broadcast level 5.00
+ storm-control multicast level 10.00
+ spanning-tree guard root
+!
+interface FastEthernet0/48
+ description "Uplink to Diapazon_Lab_VC (EX2200-48T)"
+ switchport trunk encapsulation dot1q
+ switchport trunk allowed vlan 1,3970-3979,3983,3984
+ switchport mode trunk
+ storm-control broadcast level 20.00
+ storm-control multicast level 20.00
+!
+interface GigabitEthernet0/1
+!
+interface GigabitEthernet0/2
+!
+interface GigabitEthernet0/3
+!
+interface GigabitEthernet0/4
+!
+interface Vlan1
+ no ip address
+ no ip route-cache
+ no ip mroute-cache
+!
+interface Vlan3984
+ description "Managment"
+ ip address 10.158.0.2 255.255.0.0
+ no ip route-cache
+ no ip mroute-cache
+!
+ip default-gateway 10.158.0.1
+ip classless
+ip route 0.0.0.0 0.0.0.0 10.158.0.1
+ip http server
+ip http secure-server
+!
+!
+logging 10.158.12.0
+access-list 24 permit 10.158.0.30
+!
+snmp-server community lab RO
+snmp-server community public RO
+!
+banner motd ^C
+This is the Access Switch of Lab Rack 1.2 (Cisco 3560-48TS).
+Property of BNS dept.
+If you are not an authorised, you must disconnect immediately.
+--------------------------------------------------
+############ Rack 1.2 : Access Switch ############
+--------------------------------------------------
+^C
+!
+line con 0
+ logging synchronous
+line vty 0 4
+ exec-timeout 300 0
+ logging synchronous
+ login local
+ transport input telnet ssh
+line vty 5 15
+ exec-timeout 300 0
+ logging synchronous
+ login local
+ transport input telnet ssh
+!
+ntp clock-period 36029790
+ntp access-group peer 24
+ntp server 10.158.0.30
+end

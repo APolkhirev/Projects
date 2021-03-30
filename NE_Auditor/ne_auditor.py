@@ -245,12 +245,6 @@ if __name__ == "__main__":
         except Exception as err:
             print("Error: ", err)
 
-    logging.getLogger("paramiko").setLevel(logging.INFO)
-    logging.basicConfig(
-        format="%(threadName)s %(name)s %(levelname)s: %(message)s",
-        level=logging.INFO,
-    )
-
     dev_param = {
         "device_type": "huawei",
         "ip": "10.158.149.10",
@@ -266,6 +260,14 @@ if __name__ == "__main__":
     v_path: str = "./audit_result_" + str(datetime.date.today())
     f_dir_creator(v_path)
     v_coms = f_commands_reader(v_commands_file)
+
+    logging.getLogger("paramiko").setLevel(logging.DEBUG)
+    logging.basicConfig(
+        format="%(threadName)s %(name)s %(levelname)s: %(message)s",
+        level=logging.INFO,
+        filename=f"{v_path}/logfile_{str(datetime.date.today())}.log",
+        filemode="w",
+    )
 
     f_device_caller(v_nes, v_coms, v_login, v_pass, v_ufo_type)
     print("Stop.\n")

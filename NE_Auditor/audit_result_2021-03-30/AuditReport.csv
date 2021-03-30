@@ -1,0 +1,6 @@
+hostname,ip,device_type,status
+R1.2-SW-BNS.LAB,10.158.0.2,cisco_ios,Ok
+auditor@EX4200_BNS_LAB,10.158.1.1,juniper_junos,Ok
+R1.2-S5700-28C-EI.LAB,10.158.149.10,huawei,Ok
+R1.2-S5700-28C-SI.LAB,10.158.149.11,huawei,Ok
+-,10.158.149.13,-,Timeout error
