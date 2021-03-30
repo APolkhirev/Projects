@@ -116,6 +116,7 @@ def f_check_ip(v_ip):
         < ipaddress.ip_address("203.0.113.255")
     ):
         return False, "Bad IP: Assigned as TEST-NET-3, documentation and examples."
+
     return True, "IP address is valid"
 
 
@@ -153,6 +154,7 @@ def f_ip_list_checker(v_ip_list_file):
                     )
                 )
             return v_nes
+
     except FileNotFoundError:
         logging.error(ipaddress_file_err_msg.format(v_ip_list_file))
 
