@@ -1,5 +1,5 @@
 """
-NE_auditor v0.9
+NE_auditor v1.0
 """
 
 import argparse
@@ -16,14 +16,22 @@ from concurrent.futures import ThreadPoolExecutor
 import enlighten
 import pandas
 import yaml
-from netmiko import ssh_exception, ConnectHandler, SSHDetect
+from netmiko import (
+    NetmikoAuthenticationException,
+    NetmikoTimeoutException,
+    ConnectHandler,
+    SSHDetect,
+)
+from paramiko import ssh_exception
 from tabulate import tabulate
 
 from ip_list_checker import f_ip_list_checker
+from retry import retry
 
 
-MAX_CONCURRENT_SESSIONS = 10
 DEFAULT_UFO_DEVICE_TYPE = "extreme_exos"
+MAX_CONCURRENT_SESSIONS = 10
+RETRY_TIMES = 2
 
 
 def f_commands_reader(commands_file):
@@ -56,6 +64,7 @@ def f_dir_creator(dir_name):
         )
 
 
+@retry(NetmikoTimeoutException, max_retries=RETRY_TIMES)
 def f_send_commands_to_device(
     id_count: int, device, command_set, nedir, v_pbar, ufo_type
 ):
@@ -103,30 +112,37 @@ def f_send_commands_to_device(
                 device["device_type"] = ufo_type
                 v_dtype = ufo_type
         net_connect = ConnectHandler(**device)
-    except ssh_exception.NetmikoAuthenticationException:
+    except NetmikoAuthenticationException:
+        v_pbar.update()
         v_report[id_count]["status"] = "Auth. error"
         logging.info(
             received_err_msg.format(
                 datetime.datetime.now().time(), ip, "Authentication error"
             )
         )
+    except NetmikoTimeoutException:
         v_pbar.update()
-    except ssh_exception:
         v_report[id_count]["status"] = "No SSH access"
         logging.info(
             received_err_msg.format(
                 datetime.datetime.now().time(), ip, "SSH access error"
             )
         )
+        raise NetmikoTimeoutException
+    except ssh_exception:
         v_pbar.update()
+        v_report[id_count]["status"] = "No SSH access"
+        logging.info(
+            received_err_msg.format(datetime.datetime.now().time(), ip, "SSH error")
+        )
     else:
         f_dir_creator(v_path + f"/NE-{id_count} ({ip})")
         f_command_outputs_to_files()  # отправляем команды на устройство, считываем в соответствующие файлы
+        v_pbar.update()
         logging.info(received_msg.format(datetime.datetime.now().time(), ip))
         v_report[id_count]["status"] = "Ok"
         v_report[id_count]["hostname"] = net_connect.find_prompt().strip("<>#")
         v_report[id_count]["device_type"] = v_dtype
-        v_pbar.update()
         net_connect.disconnect()
 
 

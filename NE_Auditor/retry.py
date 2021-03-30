@@ -1,6 +1,7 @@
 import logging
 import time
-import traceback
+
+# import traceback
 from functools import wraps
 from typing import Union, Type, Tuple, Optional, Callable, TypeVar
 
@@ -10,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 def retry(
     exceptions: Union[Type[Exception], Tuple[Type[Exception], ...]],
-    max_retries: int = 3,
-    delay: int = 3,
+    max_retries: int = 2,
+    delay: int = 1,
     delay_multiplier: int = 2,
     exc_retry_condition: Optional[Callable[[Exception], bool]] = None,
     exc_retry_bypass_action_log: bool = True,
@@ -54,11 +55,12 @@ def retry(
                             return
                     attempt_num += 1
                     logger.warning(
-                        "Retry attempt #%d/%d in %d seconds ...\n%s",
+                        "Retry attempt #%d/%d in %d seconds ...",
+                        # "\n%s",
                         attempt_num,
                         max_retries,
                         mdelay,
-                        traceback.format_exc(limit=1),
+                        # traceback.format_exc(limit=1),
                     )
                     time.sleep(mdelay)
                     mdelay *= delay_multiplier
