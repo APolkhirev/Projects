@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def retry(
+    v_pbar,
     exceptions: Union[Type[Exception], Tuple[Type[Exception], ...]],
     max_retries: int = 2,
     delay: int = 1,
@@ -21,6 +22,7 @@ def retry(
     """
     Retry calling the decorated function using an exponential backoff.
     Args:
+        v_pbar: A progress bar used by main scrypt. Custom variable.
         exceptions: A single or a tuple of Exceptions to trigger retry
         max_retries: Number of times to retry before failing.
         delay: Initial delay between retries in seconds.
@@ -56,7 +58,7 @@ def retry(
                     attempt_num += 1
                     logger.warning(
                         "Retry attempt #%d/%d in %d seconds ...",
-                        # "\n%s",
+                        # "\n%s",  # append this to the upper string if traceback is needed
                         attempt_num,
                         max_retries,
                         mdelay,
@@ -64,6 +66,8 @@ def retry(
                     )
                     time.sleep(mdelay)
                     mdelay *= delay_multiplier
+
+            v_pbar.update()  # update pbar only after all attempts
             return f(*args, **kwargs)
 
         return f_retry

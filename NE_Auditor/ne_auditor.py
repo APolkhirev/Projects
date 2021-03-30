@@ -33,6 +33,9 @@ DEFAULT_UFO_DEVICE_TYPE = "extreme_exos"
 MAX_CONCURRENT_SESSIONS = 10
 RETRY_TIMES = 2
 
+manager = enlighten.get_manager()
+pbar = manager.counter(total=0, desc="Devices processed:", unit="NE", color="red")
+
 
 def f_commands_reader(commands_file):
     """ Считываение команд из YAML-файла в список """
@@ -64,9 +67,14 @@ def f_dir_creator(dir_name):
         )
 
 
-@retry(NetmikoTimeoutException, max_retries=RETRY_TIMES)
+@retry(pbar, NetmikoTimeoutException, max_retries=RETRY_TIMES)
 def f_send_commands_to_device(
-    id_count: int, device, command_set, nedir, v_pbar, ufo_type
+    id_count: int,
+    device,
+    command_set,
+    nedir,
+    v_pbar,
+    ufo_type,
 ):
     """
     Определение типа устройства, выбор для устройства перечня специфичных комманд
@@ -90,7 +98,7 @@ def f_send_commands_to_device(
                 f_output.close()
 
     ip = device["ip"]
-    start_msg = "===> {} Connection: {}"
+    start_msg = "===> {} Connection:    {}"
     received_msg = "<=== {} Received:   {}"
     received_err_msg = "<~~~ {} Received:   {}   / {}"
     time.sleep(
@@ -114,26 +122,25 @@ def f_send_commands_to_device(
         net_connect = ConnectHandler(**device)
     except NetmikoAuthenticationException:
         v_pbar.update()
-        v_report[id_count]["status"] = "Auth. error"
-        logging.info(
+        v_report[id_count]["status"] = "Authentication error"
+        logging.warning(
             received_err_msg.format(
                 datetime.datetime.now().time(), ip, "Authentication error"
             )
         )
     except NetmikoTimeoutException:
-        v_pbar.update()
-        v_report[id_count]["status"] = "No SSH access"
-        logging.info(
-            received_err_msg.format(
-                datetime.datetime.now().time(), ip, "SSH access error"
-            )
+        v_report[id_count]["status"] = "Timeout error"
+        logging.warning(
+            received_err_msg.format(datetime.datetime.now().time(), ip, "Timeout error")
         )
         raise NetmikoTimeoutException
     except ssh_exception:
         v_pbar.update()
-        v_report[id_count]["status"] = "No SSH access"
-        logging.info(
-            received_err_msg.format(datetime.datetime.now().time(), ip, "SSH error")
+        v_report[id_count]["status"] = "SSH access error"
+        logging.warning(
+            received_err_msg.format(
+                datetime.datetime.now().time(), ip, "SSH access error"
+            )
         )
     else:
         f_dir_creator(v_path + f"/NE-{id_count} ({ip})")
@@ -149,10 +156,9 @@ def f_send_commands_to_device(
 def f_device_caller(device_list, cons_comm, login, password, ufo_type):
     """Функция многопоточного опроса устройств из списка устройств"""
     counter: int = 0
-    manager = enlighten.get_manager()
-    pbar = manager.counter(
-        total=len(device_list), desc="Devices processed:", unit="NE", color="red"
-    )
+
+    pbar.total = len(device_list)
+
     with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_SESSIONS) as executor:
         for v_ne_ip in device_list:
             v_ne = f"NE-{counter}"
