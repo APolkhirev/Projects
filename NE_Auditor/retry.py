@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def retry(
-    v_pbar,
+    v_pbar,  # custom parameter
     exceptions: Union[Type[Exception], Tuple[Type[Exception], ...]],
     max_retries: int = 2,
     delay: int = 1,
