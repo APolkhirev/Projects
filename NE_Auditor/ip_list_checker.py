@@ -6,10 +6,10 @@ v0.2
 import ipaddress
 import logging
 
-from typing import Tuple
+from typing import List
 
 
-def f_check_ip(v_ip: str) -> Tuple:
+def f_check_ip(v_ip: str):
     """
     Checking the IP address for the destination on the interface.
     The script checks both the format and ownership of the reserved pool of addresses
@@ -122,12 +122,12 @@ def f_check_ip(v_ip: str) -> Tuple:
     return True, "IP address is valid"
 
 
-def f_ip_list_checker(v_ip_list_file: str):
-    v_nes = ()
-    v_counter = 0
-    ipaddress_file_err_msg = "The file './{}' with the IP-address list was not found."
-    ipaddress_format_err_msg = "In the file '{}', line {} (IP '{}'): {}"
-    ipaddress_list_len_msg = "Duplicate addresses were removed from the file '{}': {}"
+def f_ip_list_checker(v_ip_list_file: str) -> List:
+    v_nes: list = []
+    v_counter: int = 0
+    ipaddress_file_err_msg: str = "The file './{}' with the IP-address list was not found."
+    ipaddress_format_err_msg: str = "In the file '{}', line {} (IP '{}'): {}"
+    ipaddress_list_len_msg: str = "Duplicate addresses were removed from the file '{}': {}"
 
     try:
         with open(v_ip_list_file, "r") as v_ip_reader:
@@ -135,7 +135,7 @@ def f_ip_list_checker(v_ip_list_file: str):
             while v_ip:
                 v_counter += 1
                 if f_check_ip(v_ip.rstrip())[0]:
-                    v_nes = v_nes + (v_ip.rstrip(),)
+                    v_nes = v_nes + [v_ip.rstrip(), ]
                 else:
                     logging.warning(
                         ipaddress_format_err_msg.format(
@@ -146,8 +146,8 @@ def f_ip_list_checker(v_ip_list_file: str):
                         )
                     )
                 v_ip = v_ip_reader.readline()
-            v_list_len = len(v_nes)
-            v_nes = sorted(tuple(set(v_nes)), key=ipaddress.IPv4Address)
+            v_list_len: int = len(v_nes)
+            v_nes = sorted(set(v_nes), key=ipaddress.IPv4Address)
 
             if v_list_len - len(v_nes) != 0:
                 logging.info(

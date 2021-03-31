@@ -11,6 +11,7 @@ import random
 import shutil
 import sys
 import time
+from typing import List, Tuple, Dict
 from concurrent.futures import ThreadPoolExecutor
 
 import enlighten
@@ -29,9 +30,9 @@ from ip_list_checker import f_ip_list_checker
 from retry import retry
 
 
-DEFAULT_UFO_DEVICE_TYPE = "extreme"
-MAX_CONCURRENT_SESSIONS = 10
-RETRY_TIMES = 2
+DEFAULT_UFO_DEVICE_TYPE: str = "extreme"
+MAX_CONCURRENT_SESSIONS: int = 10
+RETRY_TIMES: int = 2
 
 manager = enlighten.get_manager()
 pbar = manager.counter(total=0, desc="Devices processed:", unit="NE", color="red")
@@ -81,8 +82,8 @@ def f_send_commands_to_device(
 
     def f_command_outputs_to_files() -> None:
         """ Применение списка команд на устройство и запись результатов в файл """
-        cmd_send_msg = "---> Push:       {}   / {}: {}"
-        c_list = tuple(sorted(command_set[v_dtype]))
+        cmd_send_msg: str = "---> Push:       {}   / {}: {}"
+        c_list: Tuple = tuple(sorted(command_set[v_dtype]))
         for i in enumerate(c_list):
             v_filename: str = f"{nedir}/({ip})_{str(i[1]).replace('|', 'I')}.log"
             with open(v_filename, "w") as f_output:
@@ -91,10 +92,10 @@ def f_send_commands_to_device(
                 f_output.write(output)
                 f_output.close()
 
-    ip = device["ip"]
-    start_msg = "===> Connection:    {}"
-    received_msg = "<=== Received:   {}"
-    received_err_msg = "<~~~ Received:   {}   / {}"
+    ip: str = device["ip"]
+    start_msg: str = "===> Connection:    {}"
+    received_msg: str = "<=== Received:   {}"
+    received_err_msg: str = "<~~~ Received:   {}   / {}"
     time.sleep(
         0.1 * random.randint(0, 3) + (id_count % 10) * 0.33
     )  # распределение группы сессий по небольшому интервалу времени
@@ -255,7 +256,7 @@ if __name__ == "__main__":
     }
 
     v_nes = f_ip_list_checker(v_ip_list_file)
-    v_ne_status = dict.fromkeys(["hostname", "ip", "device_type", "status"])
+    v_ne_status: Dict = dict.fromkeys(["hostname", "ip", "device_type", "status"])
     v_report = []
 
     v_coms = f_commands_reader(v_commands_file)
