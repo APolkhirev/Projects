@@ -7,7 +7,7 @@ import ipaddress
 import logging
 
 
-def f_check_ip(v_ip):
+def f_check_ip(v_ip: str):
     """
     Checking the IP address for the destination on the interface.
     The script checks both the format and ownership of the reserved pool of addresses

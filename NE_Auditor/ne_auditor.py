@@ -37,7 +37,7 @@ manager = enlighten.get_manager()
 pbar = manager.counter(total=0, desc="Devices processed:", unit="NE", color="red")
 
 
-def f_commands_reader(commands_file):
+def f_commands_reader(commands_file: str):
     """ Считываение команд из YAML-файла в список """
     commands_reader_err_msg = "The file './{}' in YAML format was not found."
 
@@ -50,7 +50,7 @@ def f_commands_reader(commands_file):
     return commands
 
 
-def f_dir_creator(dir_name):
+def f_dir_creator(dir_name: str) -> None:
     """ Безопасное создание дирректории """
     dir_creator_err_msg = "Failed to create a directory: {}"
 
@@ -137,7 +137,7 @@ def f_send_commands_to_device(
         net_connect.disconnect()
 
 
-def f_device_caller(device_list, cons_comm, login, password, ufo_type):
+def f_device_caller(device_list, cons_comm, login: str, password: str, ufo_type: str):
     """Функция многопоточного опроса устройств из списка устройств"""
     counter: int = 0
 
@@ -170,8 +170,8 @@ def f_device_caller(device_list, cons_comm, login, password, ufo_type):
             pbar.close()
 
 
-def f_msg(mess):
-    mess_text = "<" * 20, mess, ">" * 20
+def f_msg(mess: str) -> None:
+    mess_text = "<" * 22, mess, ">" * 22
     scrypt_msg = "  ".join(mess_text)
     logging.info(scrypt_msg)
 
