@@ -1,5 +1,5 @@
 """
-NE_auditor v1.0
+NE_auditor v1.1
 """
 
 import argparse
@@ -29,7 +29,7 @@ from ip_list_checker import f_ip_list_checker
 from retry import retry
 
 
-DEFAULT_UFO_DEVICE_TYPE = "extreme_exos"
+DEFAULT_UFO_DEVICE_TYPE = "extreme"
 MAX_CONCURRENT_SESSIONS = 10
 RETRY_TIMES = 2
 
@@ -62,9 +62,7 @@ def f_dir_creator(dir_name):
     try:
         os.mkdir(dir_name)
     except OSError:
-        logging.warning(
-            dir_creator_err_msg.format(dir_name)
-        )
+        logging.warning(dir_creator_err_msg.format(dir_name))
 
 
 @retry(pbar, NetmikoTimeoutException, max_retries=RETRY_TIMES)
@@ -88,11 +86,7 @@ def f_send_commands_to_device(
         for i in enumerate(c_list):
             v_filename: str = f"{nedir}/({ip})_{str(i[1]).replace('|', 'I')}.log"
             with open(v_filename, "w") as f_output:
-                logging.info(
-                    cmd_send_msg.format(
-                        ip, v_dtype, i[1]
-                    )
-                )
+                logging.info(cmd_send_msg.format(ip, v_dtype, i[1]))
                 output = net_connect.send_command_timing(i[1], delay_factor=5)
                 f_output.write(output)
                 f_output.close()
@@ -123,25 +117,15 @@ def f_send_commands_to_device(
     except NetmikoAuthenticationException:
         v_pbar.update()
         v_report[id_count]["status"] = "Authentication error"
-        logging.warning(
-            received_err_msg.format(
-                ip, "Authentication error"
-            )
-        )
+        logging.warning(received_err_msg.format(ip, "Authentication error"))
     except NetmikoTimeoutException:
         v_report[id_count]["status"] = "Timeout error"
-        logging.warning(
-            received_err_msg.format(ip, "Timeout error")
-        )
+        logging.warning(received_err_msg.format(ip, "Timeout error"))
         raise NetmikoTimeoutException
     except ssh_exception:
         v_pbar.update()
         v_report[id_count]["status"] = "SSH access error"
-        logging.warning(
-            received_err_msg.format(
-                ip, "SSH access error"
-            )
-        )
+        logging.warning(received_err_msg.format(ip, "SSH access error"))
     else:
         f_dir_creator(v_path + f"/NE-{id_count} ({ip})")
         f_command_outputs_to_files()  # отправляем команды на устройство, считываем в соответствующие файлы
@@ -184,6 +168,12 @@ def f_device_caller(device_list, cons_comm, login, password, ufo_type):
             )
             counter += 1
             pbar.close()
+
+
+def f_msg(mess):
+    mess_text = "<" * 20, mess, ">" * 20
+    scrypt_msg = "  ".join(mess_text)
+    logging.info(scrypt_msg)
 
 
 if __name__ == "__main__":
@@ -251,7 +241,8 @@ if __name__ == "__main__":
     if not v_pass:
         try:
             v_pass = getpass.getpass("Password: ")
-            print("\nStart:")
+            print("\nStart.")
+            f_msg("START")
         except Exception as err:
             print("Error: ", err)
 
@@ -279,6 +270,7 @@ if __name__ == "__main__":
 
     f_device_caller(v_nes, v_coms, v_login, v_pass, v_ufo_type)
     print("Stop.\n")
+    f_msg("STOP")
 
     df = pandas.DataFrame(v_report)
     df.fillna("-", inplace=True)

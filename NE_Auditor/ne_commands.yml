@@ -29,5 +29,6 @@ mikrotik_routeros:
 - export verbose
 - export compact
 UFO:
-- export verbose
-- export compact
+- show configuration
+- show switch
+- show version
