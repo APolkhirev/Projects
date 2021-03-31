@@ -138,7 +138,9 @@ def f_send_commands_to_device(
         net_connect.disconnect()
 
 
-def f_device_caller(device_list, cons_comm, login: str, password: str, ufo_type: str):
+def f_device_caller(
+    device_list: List, cons_comm: Tuple, login: str, password: str, ufo_type: str
+):
     """Функция многопоточного опроса устройств из списка устройств"""
     counter: int = 0
 
@@ -172,8 +174,8 @@ def f_device_caller(device_list, cons_comm, login: str, password: str, ufo_type:
 
 
 def f_msg(mess: str) -> None:
-    mess_text = "<" * 22, mess, ">" * 22
-    scrypt_msg = "  ".join(mess_text)
+    mess_text: Tuple = "<" * 22, mess, ">" * 22
+    scrypt_msg: str = "  ".join(mess_text)
     logging.info(scrypt_msg)
 
 
@@ -255,11 +257,11 @@ if __name__ == "__main__":
         "conn_timeout": 15,
     }
 
-    v_nes = f_ip_list_checker(v_ip_list_file)
+    v_nes: List = f_ip_list_checker(v_ip_list_file)
     v_ne_status: Dict = dict.fromkeys(["hostname", "ip", "device_type", "status"])
     v_report = []
 
-    v_coms = f_commands_reader(v_commands_file)
+    v_coms: Tuple = f_commands_reader(v_commands_file)
 
     logging.getLogger("paramiko").setLevel(logging.DEBUG)
     logging.basicConfig(
