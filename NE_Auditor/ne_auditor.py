@@ -70,16 +70,16 @@ def f_send_commands_to_device(
     id_count: int,
     device,
     command_set,
-    nedir,
+    nedir: str,
     v_pbar,
-    ufo_type,
-):
+    ufo_type: str,
+) -> None:
     """
     Определение типа устройства, выбор для устройства перечня специфичных комманд
     и вызов вложенной функции ввода команд
     """
 
-    def f_command_outputs_to_files():
+    def f_command_outputs_to_files() -> None:
         """ Применение списка команд на устройство и запись результатов в файл """
         cmd_send_msg = "---> Push:       {}   / {}: {}"
         c_list = tuple(sorted(command_set[v_dtype]))

@@ -6,8 +6,10 @@ v0.2
 import ipaddress
 import logging
 
+from typing import Tuple
 
-def f_check_ip(v_ip: str):
+
+def f_check_ip(v_ip: str) -> Tuple:
     """
     Checking the IP address for the destination on the interface.
     The script checks both the format and ownership of the reserved pool of addresses
@@ -120,7 +122,7 @@ def f_check_ip(v_ip: str):
     return True, "IP address is valid"
 
 
-def f_ip_list_checker(v_ip_list_file):
+def f_ip_list_checker(v_ip_list_file: str):
     v_nes = ()
     v_counter = 0
     ipaddress_file_err_msg = "The file './{}' with the IP-address list was not found."
