@@ -52,7 +52,7 @@ def f_commands_reader(commands_file):
 
 def f_dir_creator(dir_name):
     """ Безопасное создание дирректории """
-    dir_creator_err_msg = "{} Failed to create a directory: {}"
+    dir_creator_err_msg = "Failed to create a directory: {}"
 
     try:
         shutil.rmtree(dir_name, ignore_errors=False, onerror=None)
@@ -63,7 +63,7 @@ def f_dir_creator(dir_name):
         os.mkdir(dir_name)
     except OSError:
         logging.warning(
-            dir_creator_err_msg.format(datetime.datetime.now().time(), dir_name)
+            dir_creator_err_msg.format(dir_name)
         )
 
 
@@ -83,14 +83,14 @@ def f_send_commands_to_device(
 
     def f_command_outputs_to_files():
         """ Применение списка команд на устройство и запись результатов в файл """
-        cmd_send_msg = "---> {} Push:       {}   / {}: {}"
+        cmd_send_msg = "---> Push:       {}   / {}: {}"
         c_list = tuple(sorted(command_set[v_dtype]))
         for i in enumerate(c_list):
             v_filename: str = f"{nedir}/({ip})_{str(i[1]).replace('|', 'I')}.log"
             with open(v_filename, "w") as f_output:
                 logging.info(
                     cmd_send_msg.format(
-                        datetime.datetime.now().time(), ip, v_dtype, i[1]
+                        ip, v_dtype, i[1]
                     )
                 )
                 output = net_connect.send_command_timing(i[1], delay_factor=5)
@@ -98,13 +98,13 @@ def f_send_commands_to_device(
                 f_output.close()
 
     ip = device["ip"]
-    start_msg = "===> {} Connection:    {}"
-    received_msg = "<=== {} Received:   {}"
-    received_err_msg = "<~~~ {} Received:   {}   / {}"
+    start_msg = "===> Connection:    {}"
+    received_msg = "<=== Received:   {}"
+    received_err_msg = "<~~~ Received:   {}   / {}"
     time.sleep(
         0.1 * random.randint(0, 3) + (id_count % 10) * 0.33
     )  # распределение группы сессий по небольшому интервалу времени
-    logging.info(start_msg.format(datetime.datetime.now().time(), ip))
+    logging.info(start_msg.format(ip))
 
     try:
         """ Определение типа устройства """
@@ -125,13 +125,13 @@ def f_send_commands_to_device(
         v_report[id_count]["status"] = "Authentication error"
         logging.warning(
             received_err_msg.format(
-                datetime.datetime.now().time(), ip, "Authentication error"
+                ip, "Authentication error"
             )
         )
     except NetmikoTimeoutException:
         v_report[id_count]["status"] = "Timeout error"
         logging.warning(
-            received_err_msg.format(datetime.datetime.now().time(), ip, "Timeout error")
+            received_err_msg.format(ip, "Timeout error")
         )
         raise NetmikoTimeoutException
     except ssh_exception:
@@ -139,14 +139,14 @@ def f_send_commands_to_device(
         v_report[id_count]["status"] = "SSH access error"
         logging.warning(
             received_err_msg.format(
-                datetime.datetime.now().time(), ip, "SSH access error"
+                ip, "SSH access error"
             )
         )
     else:
         f_dir_creator(v_path + f"/NE-{id_count} ({ip})")
         f_command_outputs_to_files()  # отправляем команды на устройство, считываем в соответствующие файлы
         v_pbar.update()
-        logging.info(received_msg.format(datetime.datetime.now().time(), ip))
+        logging.info(received_msg.format(ip))
         v_report[id_count]["status"] = "Ok"
         v_report[id_count]["hostname"] = net_connect.find_prompt().strip("<>#")
         v_report[id_count]["device_type"] = v_dtype
@@ -187,6 +187,16 @@ def f_device_caller(device_list, cons_comm, login, password, ufo_type):
 
 
 if __name__ == "__main__":
+
+    v_path: str = "./audit_result_" + str(datetime.date.today())
+    f_dir_creator(v_path)
+
+    logging.getLogger("paramiko").setLevel(logging.DEBUG)
+    logging.basicConfig(
+        format="%(asctime)s %(threadName)s %(name)s %(levelname)s: %(message)s",
+        level=logging.INFO,
+        filename=f"{v_path}/logfile.log",
+    )
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -257,8 +267,6 @@ if __name__ == "__main__":
     v_ne_status = dict.fromkeys(["hostname", "ip", "device_type", "status"])
     v_report = []
 
-    v_path: str = "./audit_result_" + str(datetime.date.today())
-    f_dir_creator(v_path)
     v_coms = f_commands_reader(v_commands_file)
 
     logging.getLogger("paramiko").setLevel(logging.DEBUG)
