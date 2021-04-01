@@ -255,7 +255,7 @@ if __name__ == "__main__":
     }
 
     v_nes: list[str] = f_ip_list_checker(v_ip_list_file)
-    v_ne_status: dict[str] = dict.fromkeys(["hostname", "ip", "device_type", "status"])
+    v_ne_status: dict[str, str] = dict.fromkeys(["hostname", "ip", "device_type", "status"])
     v_report = []
 
     v_coms: tuple[str, ...] = f_commands_reader(v_commands_file)
