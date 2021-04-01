@@ -259,7 +259,6 @@ if __name__ == "__main__":
         ["hostname", "ip", "device_type", "status"]
     )
     v_report: list[dict[str, str]] = []
-
     v_coms: dict[str, list[str]] = f_commands_reader(v_commands_file)
 
     logging.getLogger("paramiko").setLevel(logging.DEBUG)
@@ -270,8 +269,6 @@ if __name__ == "__main__":
         filemode="w",
     )
 
-    print(v_coms)
-    print(type(v_coms))
     f_device_caller(v_nes, v_coms, v_login, v_pass, v_ufo_type)
     print("Stop.\n")
     logging.info("<" * 22 + "  STOP  " + ">" * 22)
