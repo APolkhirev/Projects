@@ -37,13 +37,13 @@ manager = enlighten.get_manager()
 pbar = manager.counter(total=0, desc="Devices processed:", unit="NE", color="red")
 
 
-def f_commands_reader(commands_file: str) -> tuple:
+def f_commands_reader(commands_file: str) -> tuple[str]:
     """ Считываение команд из YAML-файла в список """
     commands_reader_err_msg: str = "The file './{}' in YAML format was not found."
 
     try:
         with open(commands_file, "r") as command_reader:
-            commands = yaml.safe_load(command_reader)
+            commands: tuple[str] = yaml.safe_load(command_reader)
     except FileNotFoundError:
         logging.error(commands_reader_err_msg.format(v_commands_file))
         sys.exit(1)

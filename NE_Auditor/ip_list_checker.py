@@ -7,7 +7,7 @@ import ipaddress
 import logging
 
 
-def f_check_ip(v_ip: str):
+def f_check_ip(v_ip: str) -> tuple[bool, str]:
     """
     Checking the IP address for the destination on the interface.
     The script checks both the format and ownership of the reserved pool of addresses
@@ -121,7 +121,7 @@ def f_check_ip(v_ip: str):
 
 
 def f_ip_list_checker(v_ip_list_file: str) -> list[str]:
-    v_nes: list = []
+    v_nes: list[str] = []
     v_counter: int = 0
     ipaddress_file_err_msg: str = (
         "The file './{}' with the IP-address list was not found."
@@ -159,10 +159,9 @@ def f_ip_list_checker(v_ip_list_file: str) -> list[str]:
                         v_ip_list_file, v_list_len - len(v_nes)
                     )
                 )
-            return v_nes
-
     except FileNotFoundError:
         logging.error(ipaddress_file_err_msg.format(v_ip_list_file))
+    return v_nes
 
 
 if __name__ == "__main__":
