@@ -19,8 +19,8 @@ options = {
     },
     "bdist_msi": {
         "target_name": f"{pname}_v{vrsn}",
-        "initial_target_dir": r"[WindowsVolume]\%s\%s" % (company_name, pname)
-    }
+        "initial_target_dir": r"[WindowsVolume]\%s\%s" % (company_name, pname),
+    },
 }
 
 setup(

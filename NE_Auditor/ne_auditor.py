@@ -46,6 +46,7 @@ def f_commands_reader(commands_file: str) -> dict[str, list[str]]:
             commands: dict[str, list[str]] = yaml.safe_load(command_reader)
     except FileNotFoundError:
         logging.error(commands_reader_err_msg.format(v_commands_file))
+        print(f" ERROR: The file './{v_commands_file}' in YAML format was not found.")
         sys.exit(1)
     return commands
 
@@ -63,6 +64,7 @@ def f_dir_creator(dir_name: str) -> None:
         os.mkdir(dir_name)
     except OSError:
         logging.warning(dir_creator_err_msg.format(dir_name))
+        print(f" INFO: Failed to create a directory: {dir_name}")
 
 
 @retry(pbar, NetmikoTimeoutException, max_retries=RETRY_TIMES)
@@ -100,7 +102,7 @@ def f_send_commands_to_device(
         0.1 * random.randint(0, 3) + (id_count % 10) * 0.33
     )  # распределение группы сессий по небольшому интервалу времени
     logging.info(start_msg.format(ip))
-    print(f"===> Connection: {ip}")
+    print(f" INFO: ===> Connection: {ip}")
 
     try:
         """ Определение типа устройства """
