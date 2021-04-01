@@ -6,8 +6,6 @@ v0.2
 import ipaddress
 import logging
 
-from typing import List
-
 
 def f_check_ip(v_ip: str):
     """
@@ -122,12 +120,16 @@ def f_check_ip(v_ip: str):
     return True, "IP address is valid"
 
 
-def f_ip_list_checker(v_ip_list_file: str) -> List:
+def f_ip_list_checker(v_ip_list_file: str) -> list[str]:
     v_nes: list = []
     v_counter: int = 0
-    ipaddress_file_err_msg: str = "The file './{}' with the IP-address list was not found."
+    ipaddress_file_err_msg: str = (
+        "The file './{}' with the IP-address list was not found."
+    )
     ipaddress_format_err_msg: str = "In the file '{}', line {} (IP '{}'): {}"
-    ipaddress_list_len_msg: str = "Duplicate addresses were removed from the file '{}': {}"
+    ipaddress_list_len_msg: str = (
+        "Duplicate addresses were removed from the file '{}': {}"
+    )
 
     try:
         with open(v_ip_list_file, "r") as v_ip_reader:
@@ -135,7 +137,9 @@ def f_ip_list_checker(v_ip_list_file: str) -> List:
             while v_ip:
                 v_counter += 1
                 if f_check_ip(v_ip.rstrip())[0]:
-                    v_nes = v_nes + [v_ip.rstrip(), ]
+                    v_nes = v_nes + [
+                        v_ip.rstrip(),
+                    ]
                 else:
                     logging.warning(
                         ipaddress_format_err_msg.format(

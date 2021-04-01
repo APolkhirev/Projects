@@ -11,7 +11,6 @@ import random
 import shutil
 import sys
 import time
-from typing import List, Tuple, Dict
 from concurrent.futures import ThreadPoolExecutor
 
 import enlighten
@@ -38,7 +37,7 @@ manager = enlighten.get_manager()
 pbar = manager.counter(total=0, desc="Devices processed:", unit="NE", color="red")
 
 
-def f_commands_reader(commands_file: str) -> Tuple:
+def f_commands_reader(commands_file: str) -> tuple:
     """ Считываение команд из YAML-файла в список """
     commands_reader_err_msg: str = "The file './{}' in YAML format was not found."
 
@@ -83,7 +82,7 @@ def f_send_commands_to_device(
     def f_command_outputs_to_files() -> None:
         """ Применение списка команд на устройство и запись результатов в файл """
         cmd_send_msg: str = "---> Push:       {}   / {}: {}"
-        c_list: Tuple = tuple(sorted(command_set[v_dtype]))
+        c_list: tuple[str, ...] = tuple(sorted(command_set[v_dtype]))
         for i in enumerate(c_list):
             v_filename: str = f"{nedir}/({ip})_{str(i[1]).replace('|', 'I')}.log"
             with open(v_filename, "w") as f_output:
@@ -139,8 +138,12 @@ def f_send_commands_to_device(
 
 
 def f_device_caller(
-    device_list: List, cons_comm: Tuple, login: str, password: str, ufo_type: str
-):
+    device_list: list[str],
+    cons_comm: tuple[str, ...],
+    login: str,
+    password: str,
+    ufo_type: str,
+) -> None:
     """Функция многопоточного опроса устройств из списка устройств"""
     counter: int = 0
 
@@ -171,12 +174,6 @@ def f_device_caller(
             )
             counter += 1
             pbar.close()
-
-
-def f_msg(mess: str) -> None:
-    mess_text: Tuple = "<" * 22, mess, ">" * 22
-    scrypt_msg: str = "  ".join(mess_text)
-    logging.info(scrypt_msg)
 
 
 if __name__ == "__main__":
@@ -245,7 +242,7 @@ if __name__ == "__main__":
         try:
             v_pass = getpass.getpass("Password: ")
             print("\nStart.")
-            f_msg("START")
+            logging.info("<" * 22 + "  START  " + ">" * 22)
         except Exception as err:
             print("Error: ", err)
 
@@ -257,11 +254,11 @@ if __name__ == "__main__":
         "conn_timeout": 15,
     }
 
-    v_nes: List = f_ip_list_checker(v_ip_list_file)
-    v_ne_status: Dict = dict.fromkeys(["hostname", "ip", "device_type", "status"])
+    v_nes: list[str] = f_ip_list_checker(v_ip_list_file)
+    v_ne_status: dict[str] = dict.fromkeys(["hostname", "ip", "device_type", "status"])
     v_report = []
 
-    v_coms: Tuple = f_commands_reader(v_commands_file)
+    v_coms: tuple[str, ...] = f_commands_reader(v_commands_file)
 
     logging.getLogger("paramiko").setLevel(logging.DEBUG)
     logging.basicConfig(
@@ -273,7 +270,7 @@ if __name__ == "__main__":
 
     f_device_caller(v_nes, v_coms, v_login, v_pass, v_ufo_type)
     print("Stop.\n")
-    f_msg("STOP")
+    logging.info("<" * 22 + "  STOP  " + ">" * 22)
 
     df = pandas.DataFrame(v_report)
     df.fillna("-", inplace=True)
