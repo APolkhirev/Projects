@@ -37,13 +37,13 @@ manager = enlighten.get_manager()
 pbar = manager.counter(total=0, desc="Devices processed:", unit="NE", color="red")
 
 
-def f_commands_reader(commands_file: str) -> tuple[str]:
+def f_commands_reader(commands_file: str) -> dict[str, list[str]]:
     """ Считываение команд из YAML-файла в список """
     commands_reader_err_msg: str = "The file './{}' in YAML format was not found."
 
     try:
         with open(commands_file, "r") as command_reader:
-            commands: tuple[str] = yaml.safe_load(command_reader)
+            commands: dict[str, list[str]] = yaml.safe_load(command_reader)
     except FileNotFoundError:
         logging.error(commands_reader_err_msg.format(v_commands_file))
         sys.exit(1)
@@ -68,8 +68,8 @@ def f_dir_creator(dir_name: str) -> None:
 @retry(pbar, NetmikoTimeoutException, max_retries=RETRY_TIMES)
 def f_send_commands_to_device(
     id_count: int,
-    device,
-    command_set,
+    device: dict,
+    command_set: dict[str, list[str]],
     nedir: str,
     v_pbar,
     ufo_type: str,
@@ -139,7 +139,7 @@ def f_send_commands_to_device(
 
 def f_device_caller(
     device_list: list[str],
-    cons_comm: tuple[str, ...],
+    cons_comm: dict[str, list[str]],
     login: str,
     password: str,
     ufo_type: str,
@@ -260,7 +260,7 @@ if __name__ == "__main__":
     )
     v_report: list[dict[str, str]] = []
 
-    v_coms: tuple[str, ...] = f_commands_reader(v_commands_file)
+    v_coms: dict[str, list[str]] = f_commands_reader(v_commands_file)
 
     logging.getLogger("paramiko").setLevel(logging.DEBUG)
     logging.basicConfig(
@@ -270,6 +270,8 @@ if __name__ == "__main__":
         filemode="w",
     )
 
+    print(v_coms)
+    print(type(v_coms))
     f_device_caller(v_nes, v_coms, v_login, v_pass, v_ufo_type)
     print("Stop.\n")
     logging.info("<" * 22 + "  STOP  " + ">" * 22)
