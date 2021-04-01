@@ -87,6 +87,7 @@ def f_send_commands_to_device(
             v_filename: str = f"{nedir}/({ip})_{str(i[1]).replace('|', 'I')}.log"
             with open(v_filename, "w") as f_output:
                 logging.info(cmd_send_msg.format(ip, v_dtype, i[1]))
+                print(f"---> Push: {ip}  / {v_dtype}: {str(i[1])}")
                 output = net_connect.send_command_timing(i[1], delay_factor=5)
                 f_output.write(output)
                 f_output.close()
@@ -99,6 +100,7 @@ def f_send_commands_to_device(
         0.1 * random.randint(0, 3) + (id_count % 10) * 0.33
     )  # распределение группы сессий по небольшому интервалу времени
     logging.info(start_msg.format(ip))
+    print(f"===> Connection: {ip}")
 
     try:
         """ Определение типа устройства """
@@ -118,19 +120,23 @@ def f_send_commands_to_device(
         v_pbar.update()
         v_report[id_count]["status"] = "Authentication error"
         logging.warning(received_err_msg.format(ip, "Authentication error"))
+        print(f" WARNING: <~~~ Received: {ip}   / Authentication error")
     except NetmikoTimeoutException:
         v_report[id_count]["status"] = "Timeout error"
         logging.warning(received_err_msg.format(ip, "Timeout error"))
+        print(f" WARNING: <~~~ Received: {ip}   / Timeout error")
         raise NetmikoTimeoutException
     except ssh_exception.SSHException:
         v_pbar.update()
         v_report[id_count]["status"] = "SSH access error"
         logging.warning(received_err_msg.format(ip, "SSH access error"))
+        print(f" WARNING: <~~~ Received: {ip}   / SSH access error")
     else:
         f_dir_creator(v_path + f"/NE-{id_count} ({ip})")
         f_command_outputs_to_files()  # отправляем команды на устройство, считываем в соответствующие файлы
         v_pbar.update()
         logging.info(received_msg.format(ip))
+        print(f" INFO: <=== Received: {ip}")
         v_report[id_count]["status"] = "Ok"
         v_report[id_count]["hostname"] = net_connect.find_prompt().strip("<>#")
         v_report[id_count]["device_type"] = v_dtype

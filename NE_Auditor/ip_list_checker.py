@@ -149,18 +149,23 @@ def f_ip_list_checker(v_ip_list_file: str) -> list[str]:
                             f_check_ip(v_ip.rstrip())[1],
                         )
                     )
+                    print(
+                        f" WARNING: In the file '{v_ip_list_file}', line {v_counter} "
+                        f"(IP '{v_ip.rstrip()}'): {f_check_ip(v_ip.rstrip())[1]}"
+                    )
                 v_ip = v_ip_reader.readline()
             v_list_len: int = len(v_nes)
             v_nes = sorted(set(v_nes), key=ipaddress.IPv4Address)
 
-            if v_list_len - len(v_nes) != 0:
-                logging.info(
-                    ipaddress_list_len_msg.format(
-                        v_ip_list_file, v_list_len - len(v_nes)
-                    )
+            diff_len: int = v_list_len - len(v_nes)
+            if diff_len != 0:
+                logging.info(ipaddress_list_len_msg.format(v_ip_list_file, diff_len))
+                print(
+                    f" WARNING: Duplicate addresses were removed from the file '{v_ip_list_file}': {diff_len}"
                 )
     except FileNotFoundError:
         logging.error(ipaddress_file_err_msg.format(v_ip_list_file))
+        print(f" ERROR: The file './{v_ip_list_file}' with the IP-address list was not found.")
     return v_nes
 
 
