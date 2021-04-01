@@ -122,7 +122,7 @@ def f_send_commands_to_device(
         v_report[id_count]["status"] = "Timeout error"
         logging.warning(received_err_msg.format(ip, "Timeout error"))
         raise NetmikoTimeoutException
-    except ssh_exception:
+    except ssh_exception.SSHException:
         v_pbar.update()
         v_report[id_count]["status"] = "SSH access error"
         logging.warning(received_err_msg.format(ip, "SSH access error"))
@@ -255,8 +255,10 @@ if __name__ == "__main__":
     }
 
     v_nes: list[str] = f_ip_list_checker(v_ip_list_file)
-    v_ne_status: dict[str, str] = dict.fromkeys(["hostname", "ip", "device_type", "status"])
-    v_report = []
+    v_ne_status: dict[str, str] = dict.fromkeys(
+        ["hostname", "ip", "device_type", "status"]
+    )
+    v_report: list[dict[str, str]] = []
 
     v_coms: tuple[str, ...] = f_commands_reader(v_commands_file)
 
