@@ -8,7 +8,7 @@ import logging
 
 
 def f_message(messtext: str) -> None:
-    print(messtext, "*" * (100 - len(messtext)))
+    print("\n" + messtext, "*" * (100 - len(messtext)))
 
 
 def f_check_ip(v_ip: str) -> tuple[bool, str]:

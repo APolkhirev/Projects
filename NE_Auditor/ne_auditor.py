@@ -39,7 +39,7 @@ pbar = manager.counter(total=0, desc="Devices processed:", unit="NE", color="red
 
 
 def f_message(messtext: str) -> None:
-    print(messtext, "*" * (100 - len(messtext)))
+    print("\n" + messtext, "*" * (100 - len(messtext)))
 
 
 def f_commands_reader(commands_file: str) -> dict[str, list[str]]:
