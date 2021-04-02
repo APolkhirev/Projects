@@ -39,7 +39,7 @@ pbar = manager.counter(total=0, desc="Devices processed:", unit="NE", color="red
 
 
 def f_message(messtext: str) -> None:
-    print("\n" + messtext, "*" * (100 - len(messtext)))
+    print("\n" + messtext, "*" * (os.get_terminal_size()[0] - len(messtext) - 2))
 
 
 def f_commands_reader(commands_file: str) -> dict[str, list[str]]:
@@ -257,7 +257,7 @@ if __name__ == "__main__":
     if not v_pass:
         try:
             v_pass = getpass.getpass("Password: ")
-            f_message(f" PLAY [ {v_commands_file} for {v_ip_list_file} ]")
+            f_message(f" PLAY [ '{v_commands_file}' for '{v_ip_list_file}' ]")
             logging.info("<" * 22 + "  START  " + ">" * 22)
         except Exception as err:
             f_message("Error: " + str(err))
@@ -286,7 +286,7 @@ if __name__ == "__main__":
     )
 
     f_device_caller(v_nes, v_coms, v_login, v_pass, v_ufo_type)
-    print(" STOP \n")
+    f_message(" STOP")
     logging.info("<" * 22 + "  STOP  " + ">" * 22)
 
     df = pandas.DataFrame(v_report)

@@ -5,10 +5,11 @@ v1.0
 
 import ipaddress
 import logging
+import os
 
 
 def f_message(messtext: str) -> None:
-    print("\n" + messtext, "*" * (100 - len(messtext)))
+    print("\n" + messtext)
 
 
 def f_check_ip(v_ip: str) -> tuple[bool, str]:
@@ -153,11 +154,9 @@ def f_ip_list_checker(v_ip_list_file: str) -> list[str]:
                             f_check_ip(v_ip.rstrip())[1],
                         )
                     )
-                    info_mes_s = (
-                        f" WARNING: In the file '{v_ip_list_file}', line {v_counter} "
-                        f"(IP '{v_ip.rstrip()}'): {f_check_ip(v_ip.rstrip())[1]}"
-                    )
-                    print(info_mes_s, "*" * (100 - len(info_mes_s)))
+                    mes_txt: str = f" WARNING In the file '{v_ip_list_file}', line {v_counter} " \
+                                   f"(IP '{v_ip.rstrip()}'): {f_check_ip(v_ip.rstrip())[1]}"
+                    f_message(mes_txt)
                 v_ip = v_ip_reader.readline()
             v_list_len: int = len(v_nes)
             v_nes = sorted(set(v_nes), key=ipaddress.IPv4Address)

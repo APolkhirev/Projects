@@ -1,3 +1,4 @@
+---
 cisco_asa:
 - show version
 - show running-config
