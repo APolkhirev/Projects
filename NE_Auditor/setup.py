@@ -3,9 +3,6 @@ from cx_Freeze import setup, Executable
 pname: str = "NE_Auditor"
 vrsn: str = "1.1"
 company_name = "IES_DTC3"
-executables = [
-    Executable("ne_auditor.py", icon="favicon.ico", target_name=f"{pname}.exe")
-]
 excludes = ["tkinter"]
 includes = ["jinxed.terminfo.vtwin10"]
 include_files = ["ne_list.ini", "ne_commands.yml"]
@@ -23,10 +20,14 @@ options = {
     },
 }
 
+executables = [
+    Executable("ne_auditor.py", icon="favicon.ico", target_name=f"{pname}.exe"),
+]
+
 setup(
     name=f"{pname}",
     version=vrsn,
-    description="Simple Multivendor Auditor for Network Elements",
     executables=executables,
     options=options,
+    description=f"{pname} Copyright 2021 Aleksei Polkhirev",
 )

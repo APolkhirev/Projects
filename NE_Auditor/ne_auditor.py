@@ -12,6 +12,7 @@ import shutil
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
+from typing import Union
 
 import enlighten
 import pandas
@@ -37,6 +38,10 @@ manager = enlighten.get_manager()
 pbar = manager.counter(total=0, desc="Devices processed:", unit="NE", color="red")
 
 
+def f_message(messtext: str) -> None:
+    print(messtext, "*" * (100 - len(messtext)))
+
+
 def f_commands_reader(commands_file: str) -> dict[str, list[str]]:
     """ Считываение команд из YAML-файла в список """
     commands_reader_err_msg: str = "The file './{}' in YAML format was not found."
@@ -46,10 +51,9 @@ def f_commands_reader(commands_file: str) -> dict[str, list[str]]:
             commands: dict[str, list[str]] = yaml.safe_load(command_reader)
     except FileNotFoundError:
         logging.error(commands_reader_err_msg.format(v_commands_file))
-        info_mes_s = (
+        f_message(
             f" ERROR: The file './{v_commands_file}' in YAML format was not found."
         )
-        print(info_mes_s, "*" * (100 - len(info_mes_s)))
         sys.exit(1)
     return commands
 
@@ -67,14 +71,13 @@ def f_dir_creator(dir_name: str) -> None:
         os.mkdir(dir_name)
     except OSError:
         logging.warning(dir_creator_err_msg.format(dir_name))
-        info_mes_s = f" INFO: Failed to create a directory: {dir_name}"
-        print(info_mes_s, "*" * (100 - len(info_mes_s)))
+        f_message(f" INFO: Failed to create a directory: {dir_name}")
 
 
 @retry(pbar, NetmikoTimeoutException, max_retries=RETRY_TIMES)
 def f_send_commands_to_device(
     id_count: int,
-    device: dict,
+    device: dict[str, Union[str, int]],
     command_set: dict[str, list[str]],
     nedir: str,
     v_pbar,
@@ -93,14 +96,12 @@ def f_send_commands_to_device(
             v_filename: str = f"{nedir}/({ip})_{str(i[1]).replace('|', 'I')}.log"
             with open(v_filename, "w") as f_output:
                 logging.info(cmd_send_msg.format(ip, v_dtype, i[1]))
-                info_mes_s = f" TASK [{ip}  / {v_dtype}: {str(i[1])} ]"
-                print(info_mes_s, "*" * (100 - len(info_mes_s)))
-
+                f_message(f" TASK [{ip}  / {v_dtype}: {str(i[1])} ]")
                 output = net_connect.send_command_timing(i[1], delay_factor=5)
                 f_output.write(output)
                 f_output.close()
 
-    ip: str = device["ip"]
+    ip = device["ip"]
     start_msg: str = "===> Connection:    {}"
     received_msg: str = "<=== Received:   {}"
     received_err_msg: str = "<~~~ Received:   {}   / {}"
@@ -109,8 +110,7 @@ def f_send_commands_to_device(
         0.1 * random.randint(0, 3) + (id_count % 10) * 0.33
     )  # распределение группы сессий по небольшому интервалу времени
     logging.info(start_msg.format(ip))
-    info_mes_s = f" INFO [ Connection ===> {ip} ]"
-    print(info_mes_s, "*" * (100 - len(info_mes_s)))
+    f_message(f" INFO [ Connection ===> {ip} ]")
 
     try:
         """ Определение типа устройства """
@@ -130,27 +130,23 @@ def f_send_commands_to_device(
         v_pbar.update()
         v_report[id_count]["status"] = "Authentication error"
         logging.warning(received_err_msg.format(ip, "Authentication error"))
-        info_mes_s = f" WARNING [ Received <~~~ {ip}   / Authentication error ]"
-        print(info_mes_s, "*" * (100 - len(info_mes_s)))
+        f_message(f" WARNING [ Received <~~~ {ip}   / Authentication error ]")
     except NetmikoTimeoutException:
         v_report[id_count]["status"] = "Timeout error"
         logging.warning(received_err_msg.format(ip, "Timeout error"))
-        info_mes_s = f" WARNING [ Received <~~~ {ip}   / Timeout error ]"
-        print(info_mes_s, "*" * (100 - len(info_mes_s)))
+        f_message(f" WARNING [ Received <~~~ {ip}   / Timeout error ]")
         raise NetmikoTimeoutException
     except ssh_exception.SSHException:
         v_pbar.update()
         v_report[id_count]["status"] = "SSH access error"
         logging.warning(received_err_msg.format(ip, "SSH access error"))
-        info_mes_s = f" WARNING [ Received <~~~ {ip}   / SSH access error ]"
-        print(info_mes_s, "*" * (100 - len(info_mes_s)))
+        f_message(f" WARNING [ Received <~~~ {ip}   / SSH access error ]")
     else:
         f_dir_creator(v_path + f"/NE-{id_count} ({ip})")
         f_command_outputs_to_files()  # отправляем команды на устройство, считываем в соответствующие файлы
         v_pbar.update()
         logging.info(received_msg.format(ip))
-        info_mes_s = f" INFO [ Received <=== {ip} ]"
-        print(info_mes_s, "*" * (100 - len(info_mes_s)))
+        f_message(f" INFO [ Received <=== {ip} ]")
         v_report[id_count]["status"] = "Ok"
         v_report[id_count]["hostname"] = net_connect.find_prompt().strip("<>#")
         v_report[id_count]["device_type"] = v_dtype
@@ -261,11 +257,10 @@ if __name__ == "__main__":
     if not v_pass:
         try:
             v_pass = getpass.getpass("Password: ")
-            info_mes: str = f" PLAY [ {v_commands_file} for {v_ip_list_file} ]"
-            print(info_mes, "*" * (100 - len(info_mes)))
+            f_message(f" PLAY [ {v_commands_file} for {v_ip_list_file} ]")
             logging.info("<" * 22 + "  START  " + ">" * 22)
         except Exception as err:
-            print("Error: ", err)
+            f_message("Error: " + str(err))
 
     dev_param = {
         "device_type": "huawei",
