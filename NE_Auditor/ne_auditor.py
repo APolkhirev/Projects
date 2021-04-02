@@ -102,7 +102,7 @@ def f_send_commands_to_device(
         0.1 * random.randint(0, 3) + (id_count % 10) * 0.33
     )  # распределение группы сессий по небольшому интервалу времени
     logging.info(start_msg.format(ip))
-    print(f" INFO: ===> Connection: {ip}")
+    print(f" INFO: [ Connection ===> {ip} ]")
 
     try:
         """ Определение типа устройства """
@@ -122,23 +122,23 @@ def f_send_commands_to_device(
         v_pbar.update()
         v_report[id_count]["status"] = "Authentication error"
         logging.warning(received_err_msg.format(ip, "Authentication error"))
-        print(f" WARNING: <~~~ Received: {ip}   / Authentication error")
+        print(f" WARNING: [ Received <~~~ {ip}   / Authentication error ]")
     except NetmikoTimeoutException:
         v_report[id_count]["status"] = "Timeout error"
         logging.warning(received_err_msg.format(ip, "Timeout error"))
-        print(f" WARNING: <~~~ Received: {ip}   / Timeout error")
+        print(f" WARNING: [ Received <~~~ {ip}   / Timeout error ]")
         raise NetmikoTimeoutException
     except ssh_exception.SSHException:
         v_pbar.update()
         v_report[id_count]["status"] = "SSH access error"
         logging.warning(received_err_msg.format(ip, "SSH access error"))
-        print(f" WARNING: <~~~ Received: {ip}   / SSH access error")
+        print(f" WARNING: [ Received <~~~ {ip}   / SSH access error ]")
     else:
         f_dir_creator(v_path + f"/NE-{id_count} ({ip})")
         f_command_outputs_to_files()  # отправляем команды на устройство, считываем в соответствующие файлы
         v_pbar.update()
         logging.info(received_msg.format(ip))
-        print(f" INFO: <=== Received: {ip}")
+        print(f" INFO: [ Received <=== {ip} ]")
         v_report[id_count]["status"] = "Ok"
         v_report[id_count]["hostname"] = net_connect.find_prompt().strip("<>#")
         v_report[id_count]["device_type"] = v_dtype
@@ -203,7 +203,7 @@ if __name__ == "__main__":
         dest="n",
         action="store",
         help="The name of the file with the list of network elements (NE)",
-        default="ne_list.txt",
+        default="ne_list.ini",
     )
     parser.add_argument(
         "-c",
@@ -249,7 +249,7 @@ if __name__ == "__main__":
     if not v_pass:
         try:
             v_pass = getpass.getpass("Password: ")
-            print("\nStart.")
+            print(f"\n PLAY [ {v_commands_file} for {v_ip_list_file} ]")
             logging.info("<" * 22 + "  START  " + ">" * 22)
         except Exception as err:
             print("Error: ", err)
@@ -278,7 +278,7 @@ if __name__ == "__main__":
     )
 
     f_device_caller(v_nes, v_coms, v_login, v_pass, v_ufo_type)
-    print("Stop.\n")
+    print(" STOP \n")
     logging.info("<" * 22 + "  STOP  " + ">" * 22)
 
     df = pandas.DataFrame(v_report)

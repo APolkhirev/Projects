@@ -8,7 +8,7 @@ executables = [
 ]
 excludes = ["tkinter"]
 includes = ["jinxed.terminfo.vtwin10"]
-include_files = ["ne_list.txt", "ne_commands.yml"]
+include_files = ["ne_list.ini", "ne_commands.yml"]
 
 options = {
     "build_exe": {

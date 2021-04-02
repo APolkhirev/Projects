@@ -170,4 +170,4 @@ def f_ip_list_checker(v_ip_list_file: str) -> list[str]:
 
 
 if __name__ == "__main__":
-    print(f_ip_list_checker("ne_list.txt"))
+    print(f_ip_list_checker("ne_list.ini"))
