@@ -12,7 +12,7 @@ import shutil
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
-from typing import Union
+from typing import Union, Counter
 
 import enlighten
 import pandas
@@ -78,7 +78,7 @@ def f_send_commands_to_device(
     device: dict[str, Union[str, int]],
     command_set: dict[str, list[str]],
     nedir: str,
-    v_pbar,
+    v_pbar: Counter[Union[str, int]],
     ufo_type: str,
 ) -> None:
     """
