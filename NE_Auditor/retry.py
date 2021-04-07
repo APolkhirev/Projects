@@ -3,6 +3,7 @@ v1.0
 """
 
 import logging
+import os
 import time
 
 # import traceback
@@ -11,6 +12,10 @@ from typing import Union, Type, Tuple, Optional, Callable, TypeVar
 
 T = TypeVar("T")
 logger = logging.getLogger(__name__)
+
+
+def f_message(messtext: str) -> str:
+    return str(messtext + " " + "*" * (os.get_terminal_size()[0] - len(messtext) - 10))
 
 
 def retry(
@@ -60,14 +65,9 @@ def retry(
                         else:
                             return
                     attempt_num += 1
-                    logger.warning(
-                        "Retry attempt #%d/%d in %d seconds ...",
-                        # "\n%s",  # append this to the upper string if traceback is needed
-                        attempt_num,
-                        max_retries,
-                        mdelay,
-                        # traceback.format_exc(limit=1),
-                    )
+                    ip: str = args[1]["ip"]
+                    messtext: str = f" WARNING [ {ip} : Retry attempt #{attempt_num}/{max_retries} in {mdelay} seconds ]"
+                    logger.warning(f_message(messtext))
                     time.sleep(mdelay)
                     mdelay *= delay_multiplier
 

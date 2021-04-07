@@ -7,9 +7,11 @@ import ipaddress
 import logging
 import os
 
+logger = logging.getLogger(__name__)
 
-def f_message(messtext: str) -> None:
-    print("\n" + messtext)
+
+def f_message(messtext: str) -> str:
+    return str(messtext + " " + "*" * (os.get_terminal_size()[0] - len(messtext) - 10))
 
 
 def f_check_ip(v_ip: str) -> tuple[bool, str]:
@@ -128,13 +130,6 @@ def f_check_ip(v_ip: str) -> tuple[bool, str]:
 def f_ip_list_checker(v_ip_list_file: str) -> list[str]:
     v_nes: list[str] = []
     v_counter: int = 0
-    ipaddress_file_err_msg: str = (
-        "The file './{}' with the IP-address list was not found."
-    )
-    ipaddress_format_err_msg: str = "In the file '{}', line {} (IP '{}'): {}"
-    ipaddress_list_len_msg: str = (
-        "Duplicate addresses were removed from the file '{}': {}"
-    )
 
     try:
         with open(v_ip_list_file, "r") as v_ip_reader:
@@ -146,31 +141,27 @@ def f_ip_list_checker(v_ip_list_file: str) -> list[str]:
                         v_ip.rstrip(),
                     ]
                 else:
-                    logging.warning(
-                        ipaddress_format_err_msg.format(
-                            v_ip_list_file,
-                            v_counter,
-                            v_ip.rstrip(),
-                            f_check_ip(v_ip.rstrip())[1],
-                        )
+                    mes_txt: str = (
+                        f" WARNING In the file '{v_ip_list_file}', line {v_counter} "
+                        f"(IP '{v_ip.rstrip()}'): {f_check_ip(v_ip.rstrip())[1]}"
                     )
-                    mes_txt: str = f" WARNING In the file '{v_ip_list_file}', line {v_counter} " \
-                                   f"(IP '{v_ip.rstrip()}'): {f_check_ip(v_ip.rstrip())[1]}"
-                    f_message(mes_txt)
+                    logger.warning(f_message(mes_txt))
                 v_ip = v_ip_reader.readline()
             v_list_len: int = len(v_nes)
             v_nes = sorted(set(v_nes), key=ipaddress.IPv4Address)
 
             diff_len: int = v_list_len - len(v_nes)
             if diff_len != 0:
-                logging.info(ipaddress_list_len_msg.format(v_ip_list_file, diff_len))
-                f_message(
-                    f" WARNING: Duplicate addresses were removed from the file '{v_ip_list_file}': {diff_len}"
+                logger.warning(
+                    f_message(
+                        f" INFO: Duplicate addresses were removed from the file '{v_ip_list_file}': {diff_len}"
+                    )
                 )
     except FileNotFoundError:
-        logging.error(ipaddress_file_err_msg.format(v_ip_list_file))
-        f_message(
-            f" ERROR: The file './{v_ip_list_file}' with the IP-address list was not found."
+        logger.error(
+            f_message(
+                f" ERROR: The file './{v_ip_list_file}' with the IP-address list was not found."
+            )
         )
     return v_nes
 
