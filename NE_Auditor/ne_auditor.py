@@ -1,5 +1,5 @@
 """
-NE_auditor v1.1
+NE_auditor v1.2
 """
 
 import argparse

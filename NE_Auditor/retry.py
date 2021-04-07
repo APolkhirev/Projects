@@ -1,5 +1,5 @@
 """
-v1.0
+v1.2
 """
 
 import logging
