@@ -39,7 +39,7 @@ pbar = manager.counter(total=0, desc="Devices processed:", unit="NE", color="red
 
 
 def f_message(messtext: str) -> str:
-    return str(messtext + " " + "*" * (os.get_terminal_size()[0] - len(messtext) - 10))
+    return str(" " + messtext + " " + "*" * (os.get_terminal_size()[0] - len(messtext) - 10))
 
 
 def f_commands_reader(commands_file: str) -> dict[str, list[str]]:
@@ -102,7 +102,7 @@ def f_send_commands_to_device(
     time.sleep(
         0.1 * random.randint(0, 3) + (idx % 10) * 0.33
     )  # распределение группы сессий по небольшому интервалу времени
-    logging.info(f_message(f" INFO [ Connection ===> {ip} ]"))
+    logging.info(f_message(f"INFO [ Connection ===> {ip} ]"))
 
     try:
         """ Определение типа устройства """
@@ -122,26 +122,26 @@ def f_send_commands_to_device(
         v_pbar.update()
         v_report[idx]["status"] = "Authentication error"
         logging.warning(
-            f_message(f" WARNING [ Received <~~~ {ip}   / Authentication error ]")
+            f_message(f"WARNING [ Received <~~~ {ip}   / Authentication error ]")
         )
 
     except NetmikoTimeoutException:
         v_report[idx]["status"] = "Timeout error"
-        logging.warning(f_message(f" WARNING [ Received <~~~ {ip}   / Timeout error ]"))
+        logging.warning(f_message(f"WARNING [ Received <~~~ {ip}   / Timeout error ]"))
 
         raise NetmikoTimeoutException
     except ssh_exception.SSHException:
         v_pbar.update()
         v_report[idx]["status"] = "SSH access error"
         logging.warning(
-            f_message(f" WARNING [ Received <~~~ {ip}   / SSH access error ]")
+            f_message(f"WARNING [ Received <~~~ {ip}   / SSH access error ]")
         )
 
     else:
         f_dir_creator(v_path + f"/NE-{idx} ({ip})")
         f_command_outputs_to_files()  # отправляем команды на устройство, считываем в соответствующие файлы
         v_pbar.update()
-        logging.info(f_message(f" INFO [ Received <=== {ip} ]"))
+        logging.info(f_message(f"INFO [ Received <=== {ip} ]"))
 
         v_report[idx]["status"] = "Ok"
         v_report[idx]["hostname"] = net_connect.find_prompt().strip("<>#")
@@ -262,7 +262,7 @@ if __name__ == "__main__":
     if not v_pass:
         try:
             v_pass = getpass.getpass("Password: ")
-            f_message(f" PLAY [ '{v_commands_file}' for '{v_ip_list_file}' ]")
+            logging.info(f_message(f"PLAY [ '{v_commands_file}' for '{v_ip_list_file}' ]"))
             logging.info("<" * 22 + "  START  " + ">" * 22)
         except Exception as err:
             f_message("Error: " + str(err))
@@ -283,7 +283,6 @@ if __name__ == "__main__":
     v_coms: dict[str, list[str]] = f_commands_reader(v_commands_file)
 
     f_device_caller(v_nes, v_coms, v_login, v_pass, v_ufo_type)
-    f_message(" STOP")
     logging.info("<" * 22 + "  STOP  " + ">" * 22)
 
     df = pandas.DataFrame(v_report)

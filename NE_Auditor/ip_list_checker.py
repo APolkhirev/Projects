@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def f_message(messtext: str) -> str:
-    return str(messtext + " " + "*" * (os.get_terminal_size()[0] - len(messtext) - 10))
+    return str(" " + messtext + " " + "*" * (os.get_terminal_size()[0] - len(messtext) - 10))
 
 
 def f_check_ip(v_ip: str) -> tuple[bool, str]:
@@ -142,7 +142,7 @@ def f_ip_list_checker(v_ip_list_file: str) -> list[str]:
                     ]
                 else:
                     mes_txt: str = (
-                        f" WARNING In the file '{v_ip_list_file}', line {v_counter} "
+                        f"WARNING In the file '{v_ip_list_file}', line {v_counter} "
                         f"(IP '{v_ip.rstrip()}'): {f_check_ip(v_ip.rstrip())[1]}"
                     )
                     logger.warning(f_message(mes_txt))
@@ -154,13 +154,13 @@ def f_ip_list_checker(v_ip_list_file: str) -> list[str]:
             if diff_len != 0:
                 logger.warning(
                     f_message(
-                        f" INFO: Duplicate addresses were removed from the file '{v_ip_list_file}': {diff_len}"
+                        f"INFO: Duplicate addresses were removed from the file '{v_ip_list_file}': {diff_len}"
                     )
                 )
     except FileNotFoundError:
         logger.error(
             f_message(
-                f" ERROR: The file './{v_ip_list_file}' with the IP-address list was not found."
+                f"ERROR: The file './{v_ip_list_file}' with the IP-address list was not found."
             )
         )
     return v_nes

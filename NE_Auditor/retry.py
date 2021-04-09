@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def f_message(messtext: str) -> str:
-    return str(messtext + " " + "*" * (os.get_terminal_size()[0] - len(messtext) - 10))
+    return str(" " + messtext + " " + "*" * (os.get_terminal_size()[0] - len(messtext) - 10))
 
 
 def retry(
@@ -66,7 +66,7 @@ def retry(
                             return
                     attempt_num += 1
                     ip: str = args[1]["ip"]
-                    messtext: str = f" WARNING [ {ip} : Retry attempt #{attempt_num}/" \
+                    messtext: str = f"WARNING [ {ip} : Retry attempt #{attempt_num}/" \
                                     f"{max_retries} in {mdelay} seconds ]"
                     logger.warning(f_message(messtext))
                     time.sleep(mdelay)
