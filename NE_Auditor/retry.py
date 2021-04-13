@@ -6,21 +6,20 @@ import logging
 import os
 import time
 
-# import traceback
 from functools import wraps
-from typing import Union, Type, Tuple, Optional, Callable, TypeVar, Counter
+from typing import Union, Type, Optional, Callable, TypeVar, Counter
 
 T = TypeVar("T")
 logger = logging.getLogger(__name__)
 
 
 def f_message(messtext: str) -> str:
-    return str(" " + messtext + " " + "*" * (os.get_terminal_size()[0] - len(messtext) - 10))
+    return str(messtext + " " + "•" * (os.get_terminal_size()[0] - len(messtext) - 2))
 
 
 def retry(
     v_pbar: Counter[Union[str, int]],  # custom parameter
-    exceptions: Union[Type[Exception], Tuple[Type[Exception], ...]],
+    exceptions: Union[Type[Exception], tuple[Type[Exception], ...]],
     max_retries: int = 2,
     delay: int = 1,
     delay_multiplier: int = 2,
@@ -66,7 +65,7 @@ def retry(
                             return
                     attempt_num += 1
                     ip: str = args[1]["ip"]
-                    messtext: str = f"WARNING [ {ip} : Retry attempt #{attempt_num}/" \
+                    messtext: str = f"WARNING [ {ip}: Retry attempt #{attempt_num}/" \
                                     f"{max_retries} in {mdelay} seconds ]"
                     logger.warning(f_message(messtext))
                     time.sleep(mdelay)

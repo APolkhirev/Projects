@@ -1,6 +1,6 @@
 """
 A module for checking the list of IP addresses.
-v1.0
+v1.1
 """
 
 import ipaddress
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def f_message(messtext: str) -> str:
-    return str(" " + messtext + " " + "*" * (os.get_terminal_size()[0] - len(messtext) - 10))
+    return str(messtext + " " + "•" * (os.get_terminal_size()[0] - len(messtext) - 2))
 
 
 def f_check_ip(v_ip: str) -> tuple[bool, str]:

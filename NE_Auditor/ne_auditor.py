@@ -39,7 +39,7 @@ pbar = manager.counter(total=0, desc="Devices processed:", unit="NE", color="red
 
 
 def f_message(messtext: str) -> str:
-    return str(" " + messtext + " " + "*" * (os.get_terminal_size()[0] - len(messtext) - 10))
+    return str(messtext + " " + "•" * (os.get_terminal_size()[0] - len(messtext) - 2))
 
 
 def f_commands_reader(commands_file: str) -> dict[str, list[str]]:
@@ -92,7 +92,7 @@ def f_send_commands_to_device(
         for i in enumerate(c_list):
             v_filename: str = f"{nedir}/({ip})_{str(i[1]).replace('|', 'I')}.log"
             with open(v_filename, "w") as f_output:
-                logging.info(f_message(f" TASK [{ip}  / {v_dtype}: {str(i[1])} ]"))
+                logging.info(f_message(f"TASK [ {ip}  / {v_dtype}: {str(i[1])} ]"))
                 output = net_connect.send_command_timing(i[1], delay_factor=5)
                 f_output.write(output)
                 f_output.close()
