@@ -90,7 +90,9 @@ def f_send_commands_to_device(
         """ Применение списка команд на устройство и запись результатов в файл """
         c_list: tuple[str, ...] = tuple(sorted(command_set[v_dtype]))
         for i in enumerate(c_list):
-            v_filename: str = f"{nedir}/({ip})_{str(i[1]).replace('|', 'I')}.log"
+            v_filename: str = os.path.join(
+                nedir, f"({ip})_{str(i[1]).replace('|', 'I')}.log"
+            )
             with open(v_filename, "w") as f_output:
                 logging.info(f_message(f"TASK [ {ip}  / {v_dtype}: {str(i[1])} ]"))
                 output = net_connect.send_command_timing(i[1], delay_factor=5)
@@ -138,7 +140,7 @@ def f_send_commands_to_device(
         )
 
     else:
-        f_dir_creator(v_path + f"/NE-{idx} ({ip})")
+        f_dir_creator(os.path.join(v_path, f"NE-{idx} ({ip})"))
         f_command_outputs_to_files()  # отправляем команды на устройство, считываем в соответствующие файлы
         v_pbar.update()
         logging.info(f_message(f"INFO [ Received <=== {ip} ]"))
@@ -164,7 +166,7 @@ def f_device_caller(
     with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_SESSIONS) as executor:
         for v_ne_ip in device_list:
             v_ne = f"NE-{counter}"
-            v_nedir = f"{v_path}/{v_ne} ({v_ne_ip})"
+            v_nedir = os.path.join(v_path, f"{v_ne} ({v_ne_ip})")
             v_ne_ssh = {
                 "device_type": "autodetect",
                 "ip": v_ne_ip,
@@ -197,7 +199,7 @@ if __name__ == "__main__":
         format="%(asctime)s %(levelname)-8s: %(threadName)s %(name)-8s %(message)s",
         datefmt="%y-%m-%d %H:%M:%S",
         level=logging.INFO,
-        filename=f"{v_path}/logfile_{str(datetime.date.today())}.log",
+        filename=os.path.join(v_path, f"logfile_{str(datetime.date.today())}.log"),
         filemode="w",
     )
     console = logging.StreamHandler()
@@ -262,7 +264,9 @@ if __name__ == "__main__":
     if not v_pass:
         try:
             v_pass = getpass.getpass("Password: ")
-            logging.info(f_message(f"PLAY [ '{v_commands_file}' for '{v_ip_list_file}' ]"))
+            logging.info(
+                f_message(f"PLAY [ '{v_commands_file}' for '{v_ip_list_file}' ]")
+            )
             logging.info("<" * 22 + "  START  " + ">" * 22)
         except Exception as err:
             f_message("Error: " + str(err))
@@ -288,6 +292,6 @@ if __name__ == "__main__":
     df = pandas.DataFrame(v_report)
     df.fillna("-", inplace=True)
     print(tabulate(df, headers="keys", tablefmt="rst"))
-    df.to_csv(str(v_path) + r"\AuditReport.csv", index=False)
+    df.to_csv(os.path.join(v_path, "AuditReport.csv"), index=False)
 
     input("\nDone. Press ENTER to exit.")
