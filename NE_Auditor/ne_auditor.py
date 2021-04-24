@@ -146,7 +146,11 @@ def f_send_commands_to_device(
         logging.info(f_message(f"INFO [ Received <=== {ip} ]"))
 
         v_report[idx]["status"] = "Ok"
-        v_report[idx]["hostname"] = net_connect.find_prompt().strip("<>#")
+        v_report[idx]["hostname"]: str = (
+            net_connect.find_prompt().strip("<>#~:*$").strip()
+        )
+        if "@" in v_report[idx]["hostname"]:
+            v_report[idx]["hostname"] = v_report[idx]["hostname"].split(sep="@")[1]
         v_report[idx]["device_type"] = v_dtype
         net_connect.disconnect()
 
@@ -275,7 +279,7 @@ if __name__ == "__main__":
         "device_type": "huawei",
         "ip": "10.158.149.10",
         "username": "auditor",
-        "password": "1qaz@WS",
+        "password": "1qaz@WSX",
         "conn_timeout": 15,
     }
 
