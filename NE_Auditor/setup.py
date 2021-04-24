@@ -1,7 +1,7 @@
 from cx_Freeze import setup, Executable
 
 pname: str = "NE_Auditor"
-vrsn: str = "1.2"
+vrsn: str = "1.3"
 company_name = "IES_DTC3"
 excludes = ["tkinter"]
 includes = ["jinxed.terminfo.vtwin10"]
