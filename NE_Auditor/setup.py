@@ -2,7 +2,7 @@ from cx_Freeze import setup, Executable
 
 pname: str = "NE_Auditor"
 vrsn: str = "1.3"
-company_name = "IES_DTC3"
+company_name = "DTC"
 excludes = ["tkinter"]
 includes = ["jinxed.terminfo.vtwin10"]
 include_files = ["ne_list.ini", "ne_commands.yml"]

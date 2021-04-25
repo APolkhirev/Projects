@@ -275,14 +275,6 @@ if __name__ == "__main__":
         except Exception as err:
             f_message("Error: " + str(err))
 
-    dev_param = {
-        "device_type": "huawei",
-        "ip": "10.158.149.10",
-        "username": "auditor",
-        "password": "1qaz@WSX",
-        "conn_timeout": 15,
-    }
-
     v_nes: list[str] = f_ip_list_checker(v_ip_list_file)
     v_ne_status: dict[str, str] = dict.fromkeys(
         ["hostname", "ip", "device_type", "status"]
