@@ -267,7 +267,7 @@ if __name__ == "__main__":
 
     if not v_pass:
         try:
-            v_pass = getpass.getpass("Password: ")
+            v_pass = getpass.win_getpass("Password: ")
             logging.info(
                 f_message(f"PLAY [ '{v_commands_file}' for '{v_ip_list_file}' ]")
             )
