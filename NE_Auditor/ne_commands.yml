@@ -25,7 +25,6 @@ juniper_junos:
 huawei:
 - display current-configuration
 - display version
-- display elabel
 mikrotik_routeros:
 - export verbose
 - export compact
